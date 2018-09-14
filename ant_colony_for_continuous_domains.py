@@ -11,7 +11,7 @@ import numpy as np
 from scipy.stats import norm
 
 class ACOr:
-    """  """
+    """ Class containing the Ant Colony Optimization for Continuous Domains """
 
     def __init__(self):
         """ Constructor """
@@ -73,7 +73,7 @@ class ACOr:
     
     
     def _biased_selection(self, probabilities):
-        """  """
+        """ Returns an index based on a set of probabilities (also known as roulette wheel selection in GA) """
         r = np.random.uniform(0, sum(probabilities))
         for i, f in enumerate(probabilities):
             r -= f
@@ -83,7 +83,7 @@ class ACOr:
          
          
     def optimize(self):
-        """  """
+        """ Initializes the archive and enter the main loop, until it reaches maximum number of iterations """
         # Sanity check
         if self.num_var == 0:
             print "Error, first set the number of variables and their boundaries"
