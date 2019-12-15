@@ -18,7 +18,7 @@ class ACOr:
         self.verbosity = True
         
         # Initial algorithm parameters
-        self.max_iter = 100                             # Maximum number of iterations
+        self.max_iter = 0                             # Maximum number of iterations
         self.pop_size = 5                               # Population size
         self.k = 50                                     # Archive size
         self.q = 0.1                                    # Locality of search
@@ -35,11 +35,21 @@ class ACOr:
         self.best_solution = None                       # Best solution of the archive
     # end def
             
+    def set_parameters(self, max_iter, pop_size, k, q, xi):
+        """ Sets the parameters of the algorithm """
+        self.max_iter = max_iter
+        self.pop_size = pop_size
+        self.k = k
+        self.q = q
+        self.xi = xi
+    # end def
             
     def set_variables(self, nvar, ranges):
         """ Sets the number of variables and their boundaries """
         if len(ranges) != nvar:
             print("Error, number of variables and ranges does not match")
+        elif self.max_iter == 0:
+            print("Error, please set algorithm parameters before")
         else:
             self.num_var = nvar
             self.var_ranges = ranges
@@ -50,16 +60,6 @@ class ACOr:
     def set_cost(self, costf):
         """ Sets the cost function that will guide the search """
         self.cost_function = costf
-    # end def
-    
-    
-    def set_parameters(self, max_iter, pop_size, k, q, xi):
-        """ Sets the parameters of the algorithm """
-        self.max_iter = max_iter
-        self.pop_size = pop_size
-        self.k = k
-        self.q = q
-        self.xi = xi
     # end def
     
     

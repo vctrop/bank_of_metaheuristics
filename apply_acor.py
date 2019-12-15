@@ -16,8 +16,8 @@ ranges = [[-5,5],
           [-5,5]]
 
 colony.set_cost(continuous_benchmarks.sphere)
-colony.set_variables(3, ranges)
 colony.set_parameters(100, 5, 50, 0.01, 0.85)
+colony.set_variables(3, ranges)
 
 solution = colony.optimize()
 
