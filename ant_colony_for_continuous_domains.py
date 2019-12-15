@@ -39,7 +39,7 @@ class ACOr:
     def set_variables(self, nvar, ranges):
         """ Sets the number of variables and their boundaries """
         if len(ranges) != nvar:
-            print "Error, number of variables and ranges does not match"
+            print("Error, number of variables and ranges does not match")
         else:
             self.num_var = nvar
             self.var_ranges = ranges
@@ -68,7 +68,7 @@ class ACOr:
         if type(status) is bool:
             self.verbosity = status
         else:
-            print "Error, received verbosity parameter is not boolean"
+            print("Error, received verbosity parameter is not boolean")
     # end def
     
     
@@ -86,18 +86,18 @@ class ACOr:
         """ Initializes the archive and enter the main loop, until it reaches maximum number of iterations """
         # Sanity check
         if self.num_var == 0:
-            print "Error, first set the number of variables and their boundaries"
+            print("Error, first set the number of variables and their boundaries")
         elif self.cost_function == None:
-            print "Error, first define the cost function to be used"
+            print("Error, first define the cost function to be used")
         else:
             
-            if self.verbosity:   print "[INITIALIZING SOLUTION ARCHIVE]"
+            if self.verbosity:   print("[INITIALIZING SOLUTION ARCHIVE]")
             # Initialize the archive by random sampling, respecting each variable's constraints
             pop = np.zeros((self.pop_size, self.num_var +1))
             w = np.zeros(self.k)
             
-            for i in xrange(self.k):
-                for j in xrange(self.num_var): 
+            for i in range(self.k):
+                for j in range(self.num_var): 
                     self.SA[i, j] = np.random.uniform(self.var_ranges[j][0], self.var_ranges[j][1])        # Initialize solution archive randomly
                 self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_var])                            # Get initial cost for each solution
             self.SA = self.SA[self.SA[:, -1].argsort()]                                                    # Sort solution archive (best solutions first)
@@ -106,21 +106,21 @@ class ACOr:
             w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
             p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
             
-            if self.verbosity:   print "ALGORITHM MAIN LOOP"
+            if self.verbosity:   print("ALGORITHM MAIN LOOP")
             
             # Algorithm runs until it reaches maximum number of iterations
-            for iteration in xrange(self.max_iter):
+            for iteration in range(self.max_iter):
                 if self.verbosity:
-                    print "[%d]" % iteration
-                    print self.SA[0, :]
+                    print("[%d]" % iteration)
+                    print(self.SA[0, :])
                 
                 Mi = self.SA[:, 0:self.num_var]                                                                     # Matrix of means
-                for ant in xrange(self.pop_size):                                                                   # For each ant in the population
+                for ant in range(self.pop_size):                                                                   # For each ant in the population
                     l = self._biased_selection(p)                                                                   # Select solution of the SA to sample from based on probabilities p
                     
-                    for var in xrange(self.num_var):                                                                # Calculate the standard deviation of all variables from solution l
+                    for var in range(self.num_var):                                                                # Calculate the standard deviation of all variables from solution l
                         sigma_sum = 0
-                        for i in xrange(self.k):
+                        for i in range(self.k):
                             sigma_sum += abs(self.SA[i, var] - self.SA[l, var])
                         sigma = self.xi * (sigma_sum/(self.k - 1))
                          

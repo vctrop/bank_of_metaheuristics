@@ -21,4 +21,4 @@ colony.set_parameters(100, 5, 50, 0.01, 0.85)
 
 solution = colony.optimize()
 
-print solution
+print(solution)
