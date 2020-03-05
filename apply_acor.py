@@ -15,9 +15,11 @@ ranges = [[-5,5],
           [-5,5],
           [-5,5]]
 
+is_bounded = [True, True, True]
+          
 colony.set_cost(continuous_benchmarks.sphere)
 colony.set_parameters(100, 5, 50, 0.01, 0.85)
-colony.set_variables(ranges)
+colony.define_variables(ranges, is_bounded)
 
 solution = colony.optimize()
 
