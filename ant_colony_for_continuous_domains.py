@@ -62,7 +62,10 @@ class ACOr:
             print("Error, please set algorithm parameters before variables definition")
             exit(-1)
         if len(initial_ranges) == 0 or len(is_bounded) == 0:
-            print("Error, ranges and is_bounded lists must not be empty")
+            print("Error, initial_ranges and is_bounded lists must not be empty")
+            exit(-1)
+        if len(initial_ranges) != len(is_bounded):
+            print("Error, the number of variables for initial_ranges and is_bounded must be equal")
             exit(-1)
         
         self.num_var = len(initial_ranges)
@@ -118,7 +121,7 @@ class ACOr:
         for iteration in range(self.num_iter):
             if self.verbosity:
                 print("[%d]" % iteration)
-                # print(self.SA[0, :])
+                print(self.SA[0, :])
             
             Mi = self.SA[:, 0:self.num_var]                                                                     # Matrix of means
             for ant in range(self.pop_size):                                                                   # For each ant in the population
@@ -149,7 +152,6 @@ class ACOr:
                 
             self.SA = np.append(self.SA, pop, axis = 0)                                                         # Append new solutions to the Archive
             self.SA = self.SA[self.SA[:, -1].argsort()]                                                         # Sort solution archive according to the fitness of each solution
-            print(self.SA)
             self.SA = self.SA[0:self.k, :]                                                                      # Remove worst solutions
         
         self.best_solution = self.SA[0, :]
