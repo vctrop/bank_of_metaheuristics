@@ -1,53 +1,58 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep  6 17:36:48 2018
+#!python3
 
-@author: Victor O. Costa
+# MIT License
+# Copyright (c) 2020 Victor O. Costa
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 
-Implementation of the Ant Colony for Continuous Domains method from Socha, 2008.
-"""
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
     
+# 3rth party
 import numpy as np
 from scipy.stats import norm
+# Own
+from base_metaheuristic import Base
 
-class ACOr:
+class ACOr(Base):
     """ Class for the Ant Colony Optimization for Continuous Domains, following (Socha and Dorigo, 2006) """
 
     def __init__(self):
         """ Constructor """
-        self.verbosity = True
+        # Define verbosity and NULL problem definition
+        super().__init__()
         
         # Initial algorithm parameters
         self.num_iter = 0                               # Number of iterations
         self.pop_size = 5                               # Population size
         self.k = 50                                     # Archive size
-        self.q = 0.1                                    # Locality of search
-        self.xi = 0.85                                  # Speed of convergence
-        
-        # Initial (NULL) problem definition
-        self.num_var = None                             # Number of variables
-        self.initial_ranges = []                        # Initialization boundaries for each variable
-        self.is_constrained = []                        # Here, if a variable is constrained, it will be limited to its initialization boundaries for all the search
-        self.cost_function = None                       # Cost function to guide the search
+        self.q = 0.1                                    # Locality of search (selection of pivot ants)
+        self.xi = 0.85                                  # Speed of convergence (spreadness of ant generation)
         
         # Optimization results
         self.SA = None                                  # Solution Archive
         self.best_solution = None                       # Best solution of the archive
+        
 
-        
-    def set_verbosity(self, status):
-        """ If verbosity is set True, print partial results of the search will be printed """
-        if not (type(status) is bool):
-            print("Error, verbosity parameter must be a boolean")
-            exit(-1)
-        self.verbosity = status
-    
-        
     def set_parameters(self, num_iter, pop_size, k, q, xi):
         """ Define values for the parameters used by the algorithm """
+        # Input error checking
         if num_iter <= 0:
             print("Number of iterations must be greater than zero")
             exit(-1)
+            
         self.num_iter = num_iter
         self.pop_size = pop_size
         self.k = k
@@ -57,7 +62,7 @@ class ACOr:
     
     def define_variables(self, initial_ranges, is_bounded):
         """ Defines the number of variables, their initial values ranges and wether or not these ranges constrain the variable during the search """
-        # Error checking
+        # Input error checking
         if self.num_iter == 0:
             print("Error, please set algorithm parameters before variables definition")
             exit(-1)
@@ -68,17 +73,11 @@ class ACOr:
             print("Error, the number of variables for initial_ranges and is_bounded must be equal")
             exit(-1)
         
-        self.num_var = len(initial_ranges)
+        self.num_variables = len(initial_ranges)
         self.initial_ranges = initial_ranges
         self.is_bounded = is_bounded
-        self.SA = np.zeros((self.k, self.num_var + 1))
-        
-        
-            
-    def set_cost(self, costf):
-        """ Sets the cost function that will guide the search """
-        self.cost_function = costf
-        
+        self.SA = np.zeros((self.k, self.num_variables + 1))
+
     
     def _biased_selection(self, probabilities):
         """ Returns an index based on a set of probabilities (also known as roulette wheel selection in GA) """
@@ -87,28 +86,45 @@ class ACOr:
             r -= f
             if r <= 0:
                 return i
-         
-         
+    
+
+    def update_success_rate(self):
+        """ Xi is not updated in vanilla ACOr """
+        pass
+    
+    def update_xi(self):
+        """ Xi is not updated in vanilla ACOr """
+        pass
+    
+    def update_q(self):
+        """ q is not updated in vanilla ACOr """
+        pass
+    
+    
+    def handle_adaptions(self):
+        self.update_success_rate()
+        self.update_q()
+        self.update_xi()
+    
     def optimize(self):
         """ Initializes the archive and enter the main loop, until it reaches maximum number of iterations """
-        # Sanity check
-        if self.num_var == 0:
-            print("Error, first set the number of variables and their boundaries")
+        # Error checking
+        if self.num_variables == None:
+            print("Error, number of variables and their boundaries must be defined prior to optimization")
+            exit(-1)
+        if self.cost_function == None:
+            print("Error, cost function must be defined prior to optimization")
             exit(-1)
         
-        if self.cost_function == None:
-            print("Error, first define the cost function to be used")
-            exit(-1)
-            
+        # Initialize the archive by random sampling, respecting each variable's boundaries   
         if self.verbosity:   print("[INITIALIZING SOLUTION ARCHIVE]")
-        # Initialize the archive by random sampling, respecting each variable's constraints
-        pop = np.zeros((self.pop_size, self.num_var +1))
+        pop = np.zeros((self.pop_size, self.num_variables +1))
         w = np.zeros(self.k)
         
         for i in range(self.k):
-            for j in range(self.num_var): 
+            for j in range(self.num_variables): 
                 self.SA[i, j] = np.random.uniform(self.initial_ranges[j][0], self.initial_ranges[j][1])        # Initialize solution archive randomly
-            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_var])                            # Get initial cost for each solution
+            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])                            # Get initial cost for each solution
         self.SA = self.SA[self.SA[:, -1].argsort()]                                                    # Sort solution archive (best solutions first)
 
         x = np.linspace(1,self.k,self.k) 
@@ -123,11 +139,11 @@ class ACOr:
                 print("[%d]" % iteration)
                 print(self.SA[0, :])
             
-            Mi = self.SA[:, 0:self.num_var]                                                                     # Matrix of means
+            Mi = self.SA[:, 0:self.num_variables]                                                                     # Matrix of means
             for ant in range(self.pop_size):                                                                   # For each ant in the population
                 l = self._biased_selection(p)                                                                   # Select solution of the SA to sample from based on probabilities p
                 
-                for var in range(self.num_var):                                                                # Calculate the standard deviation of all variables from solution l
+                for var in range(self.num_variables):                                                                # Calculate the standard deviation of all variables from solution l
                     sigma_sum = 0
                     for i in range(self.k):
                         sigma_sum += abs(self.SA[i, var] - self.SA[l, var])
@@ -148,13 +164,165 @@ class ACOr:
                             # pop[ant, var] = np.random.uniform(self.initial_ranges[var][0], self.initial_ranges[var][1])
                     
                     
-                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_var])                                     # Evaluate cost of new solution
-                
-            self.SA = np.append(self.SA, pop, axis = 0)                                                         # Append new solutions to the Archive
-            self.SA = self.SA[self.SA[:, -1].argsort()]                                                         # Sort solution archive according to the fitness of each solution
-            self.SA = self.SA[0:self.k, :]                                                                      # Remove worst solutions
-        
+                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_variables])                                     # Evaluate cost of new solution
+            
+            # Append new solutions to the Archive
+            self.SA = np.append(self.SA, pop, axis = 0)                                                         
+            
+            # Compute success rate, updates xi and q. MUST be done after SA appended population, to take into account how many were accepted
+            # Does nothing in vanilla ACOr
+            self.handle_adaptions()
+            
+            # Sort solution archive according to the fitness of each solution
+            self.SA = self.SA[self.SA[:, -1].argsort()]                                                         
+            # Remove worst solutions
+            self.SA = self.SA[0:self.k, :]                                                                      
+            
         self.best_solution = self.SA[0, :]
         return self.best_solution  
+        
+## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011)
+##   can be applied to ACOr (and possibly many other swarm-based metaheuristics).
 
-# end class 
+# Success rate adaptive ACOr 
+class SRAACOr(ACOr):
+    """ This is the parent class of all adaptive versions of ACOr presented here. It contains  """
+    
+    def __init__(self):
+        """ Constructor """
+        super().__init__()
+        self.success_rate = None
+        
+    def update_success_rate(self):
+        """ Returns the success rate of the swarm at a given iteration. 
+            MUST be applied imediately after the concatenation of m new solutions to the swarm """
+        binary_reference = np.append(np.zeros(self.k), np.ones(self.pop_size))
+        binary_reference = binary_reference[self.SA[:, -1].argsort()]
+        acceptance_count = np.sum(binary_reference[0:self.k])
+        self.success_rate = acceptance_count / self.pop_size
+       
+    
+# Adaptive center selector ACOr
+class ACSACOr(SRAACOr):
+    """ Adaptive control of the q parameter """
+    def __init__(self):
+        """ Constructor """
+        super().__init__()
+        
+        #
+        self.min_q = None
+        self.max_q = None
+    
+    def set_parameters(self, num_iter, pop_size, k, xi, min_q, max_q):
+        """ Define values for the parameters used by the algorithm """
+        # Input error checking
+        if min_q > max_q:
+            print("Max q must be greater than min q")
+            exit(-1)
+        
+        # Parameter setting from ACOr class
+        super().super().set_parameters(num_iter, pop_size, k, max_q, xi)    
+
+        # Minimum and maximum of adaptive q
+        self.min_q = min_q
+        self.max_q = max_q
+    
+    def update_q(self):
+        """ Use population success rate to update Xi """
+        if self.success_rate == None:
+            print("Error, first compute success rate")
+            exit(-1)
+        
+        # Compute new q (currently only in a linear way)
+        self.q = (self.max_q - self.min_q) * self.success_rate + self.min_q
+       
+    
+# Adaptive generation spreadness ACOr
+class AGSACOr(SRAACOr):
+    """ Adaptive control of the xi parameter """
+    
+    def __init__(self):
+        """ Constructor """
+        super().__init__()
+        
+        #
+        self.min_xi = None
+        self.max_xi = None
+    
+    def set_parameters(self, num_iter, pop_size, k, q, min_xi, max_xi):
+        """ Define values for the parameters used by the algorithm """
+        # Input error checking
+        if min_xi > max_xi:
+            print("Max xi must be greater than min xi")
+            exit(-1)
+            
+        # Parameter setting from ACOr class
+        super().super().set_parameters(num_iter, pop_size, k, q, max_xi)    
+
+        # Minimum and maximum of adaptive xi
+        self.min_xi = min_xi
+        self.max_xi = max_xi
+    
+    def update_xi(self):
+        """ Use population success rate to update Xi """
+        if self.success_rate == None:
+            print("Error, first compute success rate")
+            exit(-1)
+        
+        # Compute acceptance count and success rate
+        self.update_success_rate()
+        # Compute new Xi (currently only in a linear way)
+        self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
+        
+    
+# Multi-adaptive ACOr
+class MAACOr(SRAACOr):
+    """ Adaptive control of the both q and xi parameters """
+    
+    def __init__(self):
+        """ Constructor """
+        super().__init__()
+        #
+        self.min_xi = None
+        self.max_xi = None
+        #
+        self.min_q = None
+        self.max_q = None
+    
+    def set_parameters(self, num_iter, pop_size, k, min_q, max_q, min_xi, max_xi):
+        """ Define values for the parameters used by the algorithm """
+        # Input error checking
+        if min_xi > max_xi or min_q > max_q:
+            print("Max of xi and q must be greater than min.")
+            exit(-1)
+            
+        # Parameter setting from ACOr class
+        super().super().set_parameters(num_iter, pop_size, k, max_q, max_xi)    
+
+        # Minimum and maximum of adaptive xi
+        self.min_xi = min_xi
+        self.max_xi = max_xi
+        
+        # Minimum and maximum of adaptive q
+        self.min_xi = min_q
+        self.max_xi = max_q
+    
+    def update_xi(self):
+        """ Use population success rate to update Xi """
+        if self.success_rate == None:
+            print("Error, first compute success rate")
+            exit(-1)
+        
+        # Compute new Xi (currently only in a linear way)
+        self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
+        
+    def update_q(self):
+        """ Use population success rate to update Xi """
+        if self.success_rate == None:
+            print("Error, first compute success rate")
+            exit(-1)
+        
+        # Compute new q (currently only in a linear way)
+        self.q = (self.max_q - self.min_q) * self.success_rate + self.min_q    
+        
+        
