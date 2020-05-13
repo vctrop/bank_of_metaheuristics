@@ -1,5 +1,5 @@
 # Bank of metaheuristics
-Accurate and comprehensible implementaton of multiple metaheuristics in a class hierarchy.
+Accurate and comprehensible implementaton of multiple metaheuristics.
 - Requirements:
   - Python 3.x
   - Numpy
