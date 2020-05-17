@@ -27,7 +27,7 @@ from deap.benchmarks import rosenbrock, schwefel, ackley, griewank, himmelblau  
 # SMAC
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from smac.configspace import ConfigurationSpace
-from smac.facade.smac_bo_facade import SMAC4HPO
+from smac.facade.smac_hpo_facade  import SMAC4HPO
 from smac.scenario.scenario import Scenario
 
 
