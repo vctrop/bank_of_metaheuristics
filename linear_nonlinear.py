@@ -35,7 +35,7 @@ from smac.scenario.scenario import Scenario
 
 # Given a function, an adaptive mechanism for ACOr, parameters and linearity of adaptive parameter control,
 #  return the average results of a number runs on a suite of functions
-def function_cost(function, range, bounded, acor_mechanism, minimum, maximum, linear_control):
+def function_cost(function, variables_range, bounded, acor_mechanism, minimum, maximum, linear_control):
     if not isinstance(acor_mechanism, str):
         print("Error, ACOr mechanism must be a string")
         exit(-1)
@@ -65,8 +65,8 @@ def function_cost(function, range, bounded, acor_mechanism, minimum, maximum, li
     
     # Define ranges and bounding of each variable
     dimensionality = 2                     # Number of variables for all functions
-    ranges      = [range    for _ in range(dimensionality)]
-    is_bounded  = [bounded  for _ in range(dimensionality)]
+    ranges      = [variables_range  for _ in range(dimensionality)]
+    is_bounded  = [bounded          for _ in range(dimensionality)]
     colony.define_variables(ranges, is_bounded)
     
     # Get cost for the given function
