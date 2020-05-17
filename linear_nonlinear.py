@@ -45,9 +45,6 @@ def function_cost(function, range, bounded, acor_mechanism, minimum, maximum, li
     if not isinstance(linear_control, bool):
         print("Error, linear control must be a boolean")
         exit(-1)
-    if len(function_list) == 0:
-        print("Error, function list must not be empty")
-        exit(-1)
         
     # Base ACOr parameters, from (Socha, 2008)
     # Number of function evaluations (F.E.) = k + iterations * m
