@@ -93,7 +93,7 @@ def define_smac_cost(function, variables_range, variables_bounded, acor_mechanis
 train_functions = [rosenbrock, schwefel, ackley, griewank, himmelblau]
 train_functions_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
 mechanisms = ['ACS', 'AGD']               
-num_smac = 2
+num_smac = 50
 function_bounding = {'rosenbrock':  False,
                      'schwefel':    True, 
                      'ackley':      True, 
