@@ -18,15 +18,24 @@
 # Python standard library
 import math
 import sys
-# 3rd party
-import numpy as np
 # Own
 from ant_colony_for_continuous_domains import ACSACOr, AGDACOr
-from deap.benchmarks import ackley
+## 3rd party
+import numpy as np
+# Benchmarking functions
+from deap.benchmarks import rosenbrock, schwefel, ackley, griewank, himmelblau      # Load functions used as train instances
+# SMAC
+from ConfigSpace.hyperparameters import UniformFloatHyperparameter
+from smac.configspace import ConfigurationSpace
+from smac.facade.smac_bo_facade import SMAC4BO
+from smac.scenario.scenario import Scenario
 
-# Given an adaptive mechanism for ACOr, linearity of parameter control and adaption parameters,
+
+
+
+# Given a function, an adaptive mechanism for ACOr, parameters and linearity of adaptive parameter control,
 #  return the average results of a number runs on a suite of functions
-def average_cost(num_iterations, acor_mechanism, minimum, maximum, linear_control, function_list):
+def function_cost(function, range, bounded, acor_mechanism, minimum, maximum, linear_control):
     if not isinstance(acor_mechanism, str):
         print("Error, ACOr mechanism must be a string")
         exit(-1)
@@ -41,50 +50,99 @@ def average_cost(num_iterations, acor_mechanism, minimum, maximum, linear_contro
         exit(-1)
         
     # Base ACOr parameters, from (Socha, 2008)
+    # Number of function evaluations (F.E.) = k + iterations * m
+    iterations = 75    # 75 iterations = 200 F.E.
     k = 50
-    pop_size = 2
+    m = 2    
     q = 1e-4
     xi = 0.85
-    ranges = [[-5,5],
-              [-5,5],
-              [-5,5]]
-
-    is_bounded = [True, True, True]
-     
+    
     if acor_mechanism == "ACS":
         colony = ACSACOr()
         colony.set_verbosity(False)
-        colony.set_parameters(num_iterations, pop_size, k, xi, minimum, maximum, linear_control)
-        colony.define_variables(ranges, is_bounded)
+        colony.set_parameters(iterations, m, k, xi, minimum, maximum, linear_control)
     else:
         colony = AGDACOr()  
         colony.set_verbosity(False)
-        colony.set_parameters(num_iterations, pop_size, k, q, minimum, maximum, linear_control)
-        colony.define_variables(ranges, is_bounded)
+        colony.set_parameters(iterations, m, k, q, minimum, maximum, linear_control)
     
-    # Sum of function costs
-    total_cost = 0.0
-    for objective_function in function_list:
-        colony.set_cost(objective_function)
-        solution_cost = colony.optimize()[-1]
-        total_cost += solution_cost
+    # Define ranges and bounding of each variable
+    dimensionality = 2                     # Number of variables for all functions
+    ranges      = [range    for _ in range(dimensionality)]
+    is_bounded  = [bounded  for _ in range(dimensionality)]
+    colony.define_variables(ranges, is_bounded)
+    
+    # Get cost for the given function
+    colony.set_cost(function)
+    function_cost = colony.optimize()[-1]
         
-    return total_cost / len(function_list)
+    return function_cost
     
-print(average_cost(1000, "ACS", 0.2, 0.8, False, [ackley]))
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+def define_smac_cost(function, variables_range, variables_bounded, acor_mechanism, linear_control):
+    def cost(smac_solution):
+        # The SMAC solution stores None-values for deactivated parameters, and we remove them here
+        smac_solution = {k: smac_solution[k] for k in smac_solution if smac_solution[k]}
+        minimum = smac_solution['min']
+        maximum = minimum + smac_solution['max_minus_min']
+        if maximum >= 1:
+            maximum = 0.99
+        
+        return function_cost(function, variables_range, bounded, acor_mechanism, minimum, maximum, linear_control)
+        
+    return cost
     
     
+train_functions = [rosenbrock, schwefel, ackley, griewank, himmelblau]
+train_functions_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
+mechanisms = ['ACS', 'AGD']               
+num_smac = 2
+function_bounding = {'rosenbrock':  False,
+                     'schwefel':    True, 
+                     'ackley':      True, 
+                     'griewank':    True, 
+                     'himmelblau':  True}
+                        
+function_ranges = {'rosenbrock':    [-10, 10],   # unbounded, initialization only
+                   'schwefel':      [-500, 500],
+                   'ackley':        [-15, 30],  
+                   'griewank':      [-600, 600],
+                   'himmelblau':    [-6,6]}     
+                    
+mechanism_ranges = {'ACS':[1e-8, 1e-1],
+                    'AGD':[0.01, 0.99]}
+                    
+# Run SMAC a number of times searching parameters (adaptive minima and maxima) for ACS and AGD in all train functions, using linear and nonlinear adaptive parameter control
+for objective_function, function_str in zip(train_functions, train_functions_names):
+    variables_bounded   = function_bounding[function_str]
+    variables_range     = function_ranges[function_str]
+    
+    for mechanism in mechanisms:
+        parameter_range = mechanism_ranges[mechanism]
+        
+        for use_linear, linearity_str in zip([True, False], ['true', 'false']):
+            smac_solutions = []
+            
+            for _ in range(num_smac):
+                ## Run SMAC for the given mechanism in a given dataset
+                # Build Configuration Space which defines all parameters and their ranges
+                cs = ConfigurationSpace()
+                min =           UniformFloatHyperparameter("min"            , parameter_range[0], parameter_range[1], default_value=(parameter_range[0]+parameter_range[1])/2)
+                max_minus_min = UniformFloatHyperparameter("max_minus_min"  , parameter_range[0], parameter_range[1], default_value=(parameter_range[0]+parameter_range[1])/2)
+                cs.add_hyperparameters([min, max_minus_min])
+                # Scenario object
+                scenario = Scenario({"run_obj": "quality",      # Optimize quality instead of runtime
+                                     "runcount-limit": 10,      # max. number of function evaluations
+                                     "cs": cs,                  # configuration space
+                                     "deterministic": "false"   # each metaheuristic being optimized is stochastic
+                                     })
+
+                # Optimize, using a SMAC-object
+                smac = SMAC4HPO(scenario    = scenario,
+                                rng         = np.random.RandomState(42),
+                                tae_runner  = define_smac_cost(objective_function, variables_range, variables_bounded, mechanism, use_linear))
+
+                solution = smac.optimize()
+                
+        
+        np.save('./results/linear_nonlinear/' + linearity_str + '_'+ mechanism + '_' + function_str + '.npy', smac_solutions)
