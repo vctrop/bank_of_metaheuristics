@@ -38,7 +38,7 @@ class ACOr(Base):
         self.num_iter = 0                               # Number of iterations
         self.pop_size = 5                               # Population size
         self.k = 50                                     # Archive size
-        self.q = 0.1                                    # Locality of search (selection of pivot ants)
+        self.q = 0.01                                    # Locality of search (selection of pivot ants)
         self.xi = 0.85                                  # Speed of convergence (spreadness of ant generation)
         
         # Optimization results
@@ -124,7 +124,7 @@ class ACOr(Base):
         for i in range(self.k):
             for j in range(self.num_variables): 
                 self.SA[i, j] = np.random.uniform(self.initial_ranges[j][0], self.initial_ranges[j][1])        # Initialize solution archive randomly
-            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])                            # Get initial cost for each solution
+            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])[0]                            # Get initial cost for each solution
         self.SA = self.SA[self.SA[:, -1].argsort()]                                                    # Sort solution archive (best solutions first)
 
         x = np.linspace(1,self.k,self.k) 
@@ -164,7 +164,7 @@ class ACOr(Base):
                             # pop[ant, var] = np.random.uniform(self.initial_ranges[var][0], self.initial_ranges[var][1])
                     
                     
-                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_variables])                                     # Evaluate cost of new solution
+                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_variables])[0]                                     # Evaluate cost of new solution
             
             # Append new solutions to the Archive
             self.SA = np.append(self.SA, pop, axis = 0)                                                         
@@ -181,8 +181,7 @@ class ACOr(Base):
         self.best_solution = self.SA[0, :]
         return self.best_solution  
         
-## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011)
-##   can be applied to ACOr (and possibly many other swarm-based metaheuristics).
+## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011) can be applied to ACOr, and possibly many other swarm-based metaheuristics.
 
 # Success rate adaptive ACOr 
 class SRAACOr(ACOr):
@@ -202,7 +201,7 @@ class SRAACOr(ACOr):
         self.success_rate = acceptance_count / self.pop_size
        
     
-# Adaptive center selector ACOr
+# Adaptive center selection ACOr
 class ACSACOr(SRAACOr):
     """ Adaptive control of the q parameter """
     def __init__(self):
@@ -221,7 +220,7 @@ class ACSACOr(SRAACOr):
             exit(-1)
         
         # Parameter setting from ACOr class
-        super().super().set_parameters(num_iter, pop_size, k, max_q, xi)    
+        super().set_parameters(num_iter, pop_size, k, max_q, xi)    
 
         # Minimum and maximum of adaptive q
         self.min_q = min_q
@@ -257,7 +256,7 @@ class AGSACOr(SRAACOr):
             exit(-1)
             
         # Parameter setting from ACOr class
-        super().super().set_parameters(num_iter, pop_size, k, q, max_xi)    
+        super().set_parameters(num_iter, pop_size, k, q, max_xi)    
 
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi
@@ -297,15 +296,15 @@ class MAACOr(SRAACOr):
             exit(-1)
             
         # Parameter setting from ACOr class
-        super().super().set_parameters(num_iter, pop_size, k, max_q, max_xi)    
+        super().set_parameters(num_iter, pop_size, k, max_q, max_xi)    
 
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi
         self.max_xi = max_xi
         
         # Minimum and maximum of adaptive q
-        self.min_xi = min_q
-        self.max_xi = max_q
+        self.min_q = min_q
+        self.max_q = max_q
     
     def update_xi(self):
         """ Use population success rate to update Xi """
