@@ -1,24 +1,19 @@
 #!python3
 
-# MIT License
-# Copyright (c) 2020 Victor O. Costa
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# Copyright (C) 2020  Victor O. Costa
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
     
 # 3rth party
 import numpy as np
@@ -92,19 +87,18 @@ class ACOr(Base):
         """ Xi is not updated in vanilla ACOr """
         pass
     
-    def update_xi(self):
+    def control_xi(self):
         """ Xi is not updated in vanilla ACOr """
         pass
     
-    def update_q(self):
+    def control_q(self):
         """ q is not updated in vanilla ACOr """
         pass
     
-    
     def handle_adaptions(self):
         self.update_success_rate()
-        self.update_q()
-        self.update_xi()
+        self.control_q()
+        self.control_xi()
     
     def optimize(self):
         """ Initializes the archive and enter the main loop, until it reaches maximum number of iterations """
@@ -185,7 +179,7 @@ class ACOr(Base):
 
 # Success rate adaptive ACOr 
 class SRAACOr(ACOr):
-    """ This is the parent class of all adaptive versions of ACOr presented here. It contains  """
+    """ Parent class of all adaptive versions of ACOr."""
     
     def __init__(self):
         """ Constructor """
@@ -216,7 +210,7 @@ class ACSACOr(SRAACOr):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_q > max_q:
-            print("Max q must be greater than min q")
+            print("Error, maximum q must be greater than minimum q")
             exit(-1)
         
         # Parameter setting from ACOr class
@@ -226,18 +220,18 @@ class ACSACOr(SRAACOr):
         self.min_q = min_q
         self.max_q = max_q
     
-    def update_q(self):
+    def control_q(self):
         """ Use population success rate to update Xi """
         if self.success_rate == None:
-            print("Error, first compute success rate")
+            print("Error, compute success rate before updating q")
             exit(-1)
         
         # Compute new q (currently only in a linear way)
         self.q = (self.max_q - self.min_q) * self.success_rate + self.min_q
        
     
-# Adaptive generation spreadness ACOr
-class AGSACOr(SRAACOr):
+# Adaptive generation dispersion ACOr
+class AGDACOr(SRAACOr):
     """ Adaptive control of the xi parameter """
     
     def __init__(self):
@@ -252,7 +246,7 @@ class AGSACOr(SRAACOr):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_xi > max_xi:
-            print("Max xi must be greater than min xi")
+            print("Error, maximum xi must be greater than minimum xi")
             exit(-1)
             
         # Parameter setting from ACOr class
@@ -262,14 +256,12 @@ class AGSACOr(SRAACOr):
         self.min_xi = min_xi
         self.max_xi = max_xi
     
-    def update_xi(self):
+    def control_xi(self):
         """ Use population success rate to update Xi """
         if self.success_rate == None:
-            print("Error, first compute success rate")
+            print("Error, compute success rate before updating xi")
             exit(-1)
         
-        # Compute acceptance count and success rate
-        self.update_success_rate()
         # Compute new Xi (currently only in a linear way)
         self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
         
@@ -306,7 +298,7 @@ class MAACOr(SRAACOr):
         self.min_q = min_q
         self.max_q = max_q
     
-    def update_xi(self):
+    def control_xi(self):
         """ Use population success rate to update Xi """
         if self.success_rate == None:
             print("Error, first compute success rate")
@@ -315,7 +307,7 @@ class MAACOr(SRAACOr):
         # Compute new Xi (currently only in a linear way)
         self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
         
-    def update_q(self):
+    def control_q(self):
         """ Use population success rate to update Xi """
         if self.success_rate == None:
             print("Error, first compute success rate")

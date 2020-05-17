@@ -7,8 +7,11 @@ Accurate and comprehensible implementaton of multiple metaheuristics.
   - Deap (only to import benchmark functions)
 
 ## Metaheuristics implemented until now:
-- Ant colony optimization for continuous domains (Socha, 2006)
-- Simulated annealing (Kirkpatrick, 1983)
-- Adaptive Crystallization Factor SA (ACFSA) for varirable step-size (Martins, 2012)
-- Particle swarm optimization (Kennedy, 1995)
-- Adaptive Inertia Weight PSO (AIWPSO), with inertia weight depending on the swarm's success rate (Nickabadi, 2011)
+- Ant colony optimization for continuous domains (ACOr). Socha, 2006.
+- Adaptive center selection ACOr (ACSACOr)
+- Adaptive generation dispersion ACOr (AGDACOr)
+- Multiple adaptive ACOr (MAACOr) 
+- Simulated annealing (SA). Kirkpatrick, 1983.
+- Adaptive crystallization factor SA (ACFSA) . Martins, 2012.
+- Particle swarm optimization (PSO). Kennedy, 1995.
+- Adaptive inertia weight PSO (AIWPSO). Nickabadi, 2011.
