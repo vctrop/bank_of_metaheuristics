@@ -17,6 +17,7 @@
     
 # 3rth party
 import numpy as np
+import math
 from scipy.stats import norm
 # Own
 from base_metaheuristic import Base
@@ -193,7 +194,13 @@ class SRAACOr(ACOr):
         binary_reference = binary_reference[self.SA[:, -1].argsort()]
         acceptance_count = np.sum(binary_reference[0:self.k])
         self.success_rate = acceptance_count / self.pop_size
-       
+        
+    def parameterized_line(self, a, b):
+        return a * self.success_rate + b
+        
+    def parameterized_sigmoid(self, Q, B):
+        return 1 / (1 + Q * math.exp(- B * self.success_rate))
+        
     
 # Adaptive center selection ACOr
 class ACSACOr(SRAACOr):
@@ -201,24 +208,45 @@ class ACSACOr(SRAACOr):
     def __init__(self):
         """ Constructor """
         super().__init__()
-        
-        #
+
         self.min_q = None
         self.max_q = None
+        
+        self.control_linearity = None
+        self.line_a = None
+        self.line_b = None
+        self.sigmoid_Q = None
+        self.sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, xi, min_q, max_q):
+    def set_parameters(self, num_iter, pop_size, k, xi, min_q, max_q, control_linearity):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_q > max_q:
             print("Error, maximum q must be greater than minimum q")
             exit(-1)
-        
+        if not isinstance(control_linearity, bool):
+            print("Error, control linearity must be a boolean")
+            exit(-1)
+        if control_linearity == False and (max_q >= 1 or min_q <= 0):
+            print("Error, nonlinear control is only defined for maximum and minimum values between 0 and 1, excluding limit points")
+            exit(-1)
+            
+            
         # Parameter setting from ACOr class
         super().set_parameters(num_iter, pop_size, k, max_q, xi)    
 
         # Minimum and maximum of adaptive q
         self.min_q = min_q
         self.max_q = max_q
+        
+        # Parameterize control curves
+        self.control_linearity = control_linearity
+        if control_linearity == True:
+            self.line_a = max_q - min_q
+            self.line_b = min_q
+        else:
+            self.sigmoid_Q = (1 - min_q) / min_q
+            self.sigmoid_B = math.log( (max_q / (1-max_q)) * self.sigmoid_Q )
     
     def control_q(self):
         """ Use population success rate to update Xi """
@@ -226,8 +254,11 @@ class ACSACOr(SRAACOr):
             print("Error, compute success rate before updating q")
             exit(-1)
         
-        # Compute new q (currently only in a linear way)
-        self.q = (self.max_q - self.min_q) * self.success_rate + self.min_q
+        # Compute new q
+        if self.control_linearity == True:
+            self.q = self.parameterized_line(self.line_a, self.line_b)
+        else:
+            self.q = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B)
        
     
 # Adaptive generation dispersion ACOr
@@ -237,16 +268,27 @@ class AGDACOr(SRAACOr):
     def __init__(self):
         """ Constructor """
         super().__init__()
-        
-        #
+
         self.min_xi = None
         self.max_xi = None
+        
+        self.control_linearity = None
+        self.line_a = None
+        self.line_b = None
+        self.sigmoid_Q = None
+        self.sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, q, min_xi, max_xi):
+    def set_parameters(self, num_iter, pop_size, k, q, min_xi, max_xi, control_linearity):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_xi > max_xi:
             print("Error, maximum xi must be greater than minimum xi")
+            exit(-1)
+        if not isinstance(control_linearity, bool):
+            print("Error, control linearity must be a boolean")
+            exit(-1)
+        if control_linearity == False and (max_xi >= 1 or min_xi <=0):
+            print("Error, nonlinear control is only defined for maximum and minimum values between 0 and 1, excluding limit points")
             exit(-1)
             
         # Parameter setting from ACOr class
@@ -255,6 +297,15 @@ class AGDACOr(SRAACOr):
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi
         self.max_xi = max_xi
+        
+        # Parameterize control curves
+        self.control_linearity = control_linearity
+        if control_linearity == True:
+            self.line_a = max_xi - min_xi
+            self.line_b = min_xi
+        else:
+            self.sigmoid_Q = (1 - min_xi) / min_xi
+            self.sigmoid_B = math.log( (max_xi / (1-max_xi)) * self.sigmoid_Q )
     
     def control_xi(self):
         """ Use population success rate to update Xi """
@@ -262,9 +313,11 @@ class AGDACOr(SRAACOr):
             print("Error, compute success rate before updating xi")
             exit(-1)
         
-        # Compute new Xi (currently only in a linear way)
-        self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
-        
+        # Compute new xi
+        if self.control_linearity == True:
+            self.xi = self.parameterized_line(self.line_a, self.line_b)
+        else:
+            self.xi = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B)
     
 # Multi-adaptive ACOr
 class MAACOr(SRAACOr):
@@ -276,15 +329,31 @@ class MAACOr(SRAACOr):
         #
         self.min_xi = None
         self.max_xi = None
+        self.xi_control_linearity = None
+        self.xi_line_a = None
+        self.xi_line_b = None
+        self.xi_sigmoid_Q = None
+        self.xi_sigmoid_B = None
         #
         self.min_q = None
         self.max_q = None
+        self.q_control_linearity = None
+        self.q_line_a = None
+        self.q_line_b = None
+        self.q_sigmoid_Q = None
+        self.q_sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, min_q, max_q, min_xi, max_xi):
+    def set_parameters(self, num_iter, pop_size, k, min_q, max_q, min_xi, max_xi, q_control_linearity, xi_control_linearity):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_xi > max_xi or min_q > max_q:
             print("Max of xi and q must be greater than min.")
+            exit(-1)
+        if (not isinstance(q_control_linearity, bool)) or (not isinstance(xi_control_linearity, bool)):
+            print("Error, control linearity must be a boolean")
+            exit(-1)
+        if (q_control_linearity == False and (max_q >= 1 or min_q <= 0)) and (xi_control_linearity == False and (max_xi >= 1 or max_xi <= 0)):
+            print("Error, nonlinear control is only defined for maximum and minimum values between 0 and 1, excluding limit points")
             exit(-1)
             
         # Parameter setting from ACOr class
@@ -293,10 +362,28 @@ class MAACOr(SRAACOr):
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi
         self.max_xi = max_xi
-        
         # Minimum and maximum of adaptive q
         self.min_q = min_q
         self.max_q = max_q
+        
+        # Parameterize q control curves
+        self.q_control_linearity = q_control_linearity
+        if q_control_linearity == True:
+            self.q_line_a = max_q - min_q
+            self.q_line_b = min_q
+        else:
+            self.q_sigmoid_Q = (1 - min_q) / min_q
+            self.q_sigmoid_B = math.log( (max_q / (1-max_q)) * self.q_sigmoid_Q )
+    
+        # Parameterize xi control curves
+        self.xi_control_linearity = xi_control_linearity
+        if xi_control_linearity == True:
+            self.xi_line_a = max_xi - min_xi
+            self.xi_line_b = min_xi
+        else:
+            self.xi_sigmoid_Q = (1 - min_xi) / min_xi
+            self.xi_sigmoid_B = math.log( (max_xi / (1-max_xi)) * self.xi_sigmoid_Q )
+    
     
     def control_xi(self):
         """ Use population success rate to update Xi """
@@ -304,16 +391,22 @@ class MAACOr(SRAACOr):
             print("Error, first compute success rate")
             exit(-1)
         
-        # Compute new Xi (currently only in a linear way)
-        self.xi = (self.max_xi - self.min_xi) * self.success_rate + self.min_xi
+        # Compute new xi
+        if self.xi_control_linearity == True:
+            self.xi = self.parameterized_line(self.xi_line_a, self.xi_line_b)
+        else:
+            self.xi = self.parameterized_sigmoid(self.xi_sigmoid_Q, self.xi_sigmoid_B)
         
+      
     def control_q(self):
         """ Use population success rate to update Xi """
         if self.success_rate == None:
             print("Error, first compute success rate")
             exit(-1)
         
-        # Compute new q (currently only in a linear way)
-        self.q = (self.max_q - self.min_q) * self.success_rate + self.min_q    
-        
-        
+        # Compute new q
+        if self.q_control_linearity == True:
+            self.q = self.parameterized_line(self.q_line_a, self.q_line_b)
+        else:
+            self.q = self.parameterized_sigmoid(self.q_sigmoid_Q, self.q_sigmoid_B)
+       
