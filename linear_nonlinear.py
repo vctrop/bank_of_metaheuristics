@@ -88,7 +88,7 @@ def define_smac_cost(function, variables_range, variables_bounded, acor_mechanis
         if maximum >= 1:
             maximum = 0.99
         
-        return function_cost(function, variables_range, bounded, acor_mechanism, minimum, maximum, linear_control)
+        return function_cost(function, variables_range, variables_bounded, acor_mechanism, minimum, maximum, linear_control)
         
     return cost
     
