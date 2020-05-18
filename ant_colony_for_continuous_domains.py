@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
     
+# Python standar lib
+import math
 # 3rth party
 import numpy as np
-import math
 from scipy.stats import norm
 # Own
 from base_metaheuristic import Base
