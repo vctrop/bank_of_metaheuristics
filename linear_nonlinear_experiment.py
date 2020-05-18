@@ -47,7 +47,7 @@ def function_cost(function, variables_range, bounded, acor_mechanism, minimum, m
     # Base ACOr parameters, from (Socha, 2008)
     # Number of function evaluations (F.E.) = k + iterations * m
     k = 50
-    m = 2    
+    m = 10    
     q = 1e-4
     xi = 0.85
     
@@ -90,7 +90,7 @@ def define_smac_cost(train_functions, functions_names, functions_bounding, funct
             maximum = 0.99
         
         # Number of function evaluations (F.E.) = k + iterations * m
-        acor_iterations = 175    # 175 iterations = 400 F.E.
+        acor_iterations = 50    # 50 iterations = 550 F.E.
         
         total_cost = 0.0
         for objective_function, function_str in zip(train_functions, functions_names):
@@ -189,7 +189,7 @@ def run_lin_nlin_smac_params():
             if maximum >= 1:
                 maximum = 0.99
             
-            acor_iterations = 475       # 475 * 2 + 50 = 1000 F.E. 
+            acor_iterations = 95       # 95 * 10 + 50 = 1000 F.E. 
             
             # For each train function, run a metaheuristic N times and save results
             for function, function_str in zip(train_functions, train_functions_names):        
