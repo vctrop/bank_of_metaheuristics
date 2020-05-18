@@ -35,7 +35,7 @@ def print_avg_std():
                 function_costs = np.load('./results/linear_nonlinear/' + linearity_str + '_'+ mechanism + '_' + function_str + '_eval.npy')
                 mean = np.mean(function_costs)
                 std  = np.std(function_costs)
-                print(mean + ' (' + std +')')
+                print(str(mean) + ' (' + str(std) +')')
             
             
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
@@ -54,3 +54,7 @@ def print_p_values():
             _, pval = wilcoxon(linear_costs, nonlinear_costs)
             print('Linear vs nonlinear control mechanism p-value' + str(pval))
             
+
+print_avg_std()
+print_p_values()
+
