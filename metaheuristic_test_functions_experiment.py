@@ -22,9 +22,8 @@ import numpy as np
 from deap.benchmarks import bohachevsky, rastrigin, cigar, sphere, schaffer 
 # Own
 from ant_colony_for_continuous_domains  import ACOr, ACSACOr, AGDACOr, MAACOr
-from particle swarm optimization        import AIWPSO
-from simulated_annealing                import ACFSA
-
+from particle_swarm_optimization        import PSO, AIWPSO
+from simulated_annealing                import SA, ACFSA
 
 if len(sys.argv) != 2:
     print('Please, run as \'%s {metaheuristic}\'' % (sys.argv[0]))
@@ -32,7 +31,7 @@ if len(sys.argv) != 2:
     
 metaheuristic_str = sys.argv[1]
  
-def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
+def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     if len(function_evals_array) == 0:
         print('Error, function evaluations array must not be empty')
         exit(-1)
@@ -48,10 +47,10 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         metaheuristic.set_parameters(m,  k, q, xi, function_evals_array)
     
     # ACSACOr
-    else if metaheuristic_name.lower() == 'acsacor':
+    elif metaheuristic_name.lower() == 'acsacor':
         # Parameters
         k = 50; m = 10; xi = 0.85
-        q_dict = np.load('./results/linear_nonlinear/linear_ACS.npy')
+        q_dict = np.load('./results/linear_nonlinear/nonlinear_ACS.npy')
         q_min = q_dict.item()['min']
         q_max = q_min + q_dict.item()['max_minus_min']
         if q_max >= 1:
@@ -59,13 +58,13 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         # Configure
         metaheuristic = ACSACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, xi, q_min, q_max, True, function_evals_array)
+        metaheuristic.set_parameters(m, k, xi, q_min, q_max, False, function_evals_array)
     
     # AGDACOr
-    else if metaheuristic_name.lower() == 'agdacor':
+    elif metaheuristic_name.lower() == 'agdacor':
         # Parameters
         k = 50; m = 10; q = 1e-4; 
-        xi_dict = np.load('./results/linear_nonlinear/linear_AGD.npy')
+        xi_dict = np.load('./results/linear_nonlinear/nonlinear_AGD.npy')
         xi_min = xi_dict.item()['min']
         xi_max = xi_min + xi_dict.item()['max_minus_min']
         if xi_max >= 1:
@@ -73,18 +72,18 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         # Configure
         metaheuristic = AGDACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, q, xi_min, xi_max, True, function_evals_array)
+        metaheuristic.set_parameters(m, k, q, xi_min, xi_max, False, function_evals_array)
     
     # MAACOr
-    else if metaheuristic_name.lower() == 'maacor':
+    elif metaheuristic_name.lower() == 'maacor':
         # Parameters
         k = 50; m = 10
-        q_dict = np.load('./results/linear_nonlinear/linear_ACS.npy')
+        q_dict = np.load('./results/linear_nonlinear/nonlinear_ACS.npy')
         q_min = q_dict.item()['min']
         q_max = q_min + q_dict.item()['max_minus_min']
         if q_max >= 1:
             q_max = 0.99
-        xi_dict = np.load('./results/linear_nonlinear/linear_AGD.npy')
+        xi_dict = np.load('./results/linear_nonlinear/nonlinear_AGD.npy')
         xi_min = xi_dict.item()['min']
         xi_max = xi_min + xi_dict.item()['max_minus_min']
         if xi_max >= 1:
@@ -92,10 +91,10 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         # Configure
         metaheuristic = MAACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, q_min, q_max, xi_min, xi_max, True, True, function_evals_array)
+        metaheuristic.set_parameters(m, k, q_min, q_max, xi_min, xi_max, False, False, function_evals_array)
     
     # SA
-    else if metaheuristic_name.lower() == 'sa':
+    elif metaheuristic_name.lower() == 'sa':
         # Parameters
         local_iterations = 500
         initial_temperature = 50
@@ -107,7 +106,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         metaheuristic.set_parameters(initial_temperature, cooling_constant, step_size, local_iterations, function_evals_array)
     
     # ACFSA
-    else if metaheuristic_name.lower() == 'acfsa':
+    elif metaheuristic_name.lower() == 'acfsa':
         # Parameters
         local_iterations = 500
         initial_temperature = 50
@@ -118,7 +117,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         metaheuristic.set_parameters(initial_temperature, cooling_constant, local_iterations, function_evals_array)
    
    # PSO
-    else if metaheuristic_name.lower() == 'pso':
+    elif metaheuristic_name.lower() == 'pso':
         # Parameters
         population_size = 20
         personal_acceleration = 2
@@ -129,7 +128,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         metaheuristic.set_parameters(population_size, personal_acceleration, global_acceleration, function_evals_array)
     
     # AIWPSO
-    else if metaheuristic_name.lower() == 'aiwpso':
+    elif metaheuristic_name.lower() == 'aiwpso':
         # Parameters
         population_size = 20
         personal_acceleration = 2
@@ -146,10 +145,9 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         
     return metaheuristic
     
-def run_metaheuristic_test_functions():
+def run_metaheuristic_test_functions(metaheuristic_name):
     test_functions = [bohachevsky, cigar, rastrigin, schaffer, sphere]
     functions_names = ['bohachevsky', 'cigar', 'rastrigin', 'schaffer', 'sphere']
-    function_evaluations = [5000 * i for i in range(1,41)]     # Establish 40 function evaluations of interest, uniformly from 5k to 200k
     functions_bounding = {  'bohachevsky':  True,
                             'cigar':        False, 
                             'rastrigin':    True, 
@@ -161,19 +159,23 @@ def run_metaheuristic_test_functions():
                             'schaffer':     [-100   , 100],    
                             'sphere':       [-10    , 10]}      # unbounded, values used in initialization only
     
+    # Establish 40 function evaluations of interest, uniformly from 5k to 200k
+    function_evaluations = [5000 * i for i in range(1,41)]     
+    #function_evaluations = [100 * i for i in range(1,21)]     
     # Number of times each metaheuristic will run in each function
     num_runs = 100
+    #num_runs = 5
 
     # For all test objective functions, run the given metaheuristic for a number of times
     for function, function_str in zip(test_functions, functions_names):
         # Get metaheuristic object with parameters already defined
-        metaheuristic = parameterize_metaheuristic(metaheuristic_str, function_evaluations)
+        metaheuristic = parameterize_metaheuristic(metaheuristic_name, function_evaluations)
         # Configure search space of the objective function
         variables_bounded = functions_bounding[function_str]
-        variables_range = function_ranges[function_str]
+        variables_range = functions_ranges[function_str]
         dimensionality = 2                     # Number of variables for all functions
-        ranges      = [variables_range  for _ in range(dimensionality)]
-        is_bounded  = [bounded          for _ in range(dimensionality)]
+        ranges      = [variables_range   for _ in range(dimensionality)]
+        is_bounded  = [variables_bounded for _ in range(dimensionality)]
         # Update the metaheuristic with objective function information
         metaheuristic.define_variables(ranges, is_bounded)
         metaheuristic.set_cost(function)
@@ -184,8 +186,9 @@ def run_metaheuristic_test_functions():
             solutions_at_FEs = metaheuristic.optimize()
             costs_array = solutions_at_FEs[:, -1]
             costs_matrix.append(costs_array)
-        np.save('./results/metaheuristics_comparison/' + function_str + '_' + metaheuristic_str + '.npy','wb')
+            print(costs_array)
+        np.save('./results/metaheuristics_comparison/' + function_str + '_' + metaheuristic_name + '.npy', costs_matrix)
 
 
 if __name__ == '__main__':
-    
+    run_metaheuristic_test_functions(metaheuristic_str)
