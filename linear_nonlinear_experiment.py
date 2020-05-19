@@ -25,11 +25,7 @@ from ant_colony_for_continuous_domains import ACSACOr, AGDACOr
 import numpy as np
 # Benchmarking functions
 from deap.benchmarks import rosenbrock, schwefel, ackley, griewank, himmelblau      # Load functions used as train instances
-# SMAC
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter
-from smac.configspace import ConfigurationSpace
-from smac.facade.smac_hpo_facade  import SMAC4HPO
-from smac.scenario.scenario import Scenario
+
 
 # Given a function, an adaptive mechanism for ACOr, parameters and linearity of adaptive parameter control,
 #  return the average results of a number runs on a suite of functions
@@ -90,7 +86,7 @@ def define_smac_cost(train_functions, functions_names, functions_bounding, funct
             maximum = 0.99
         
         # Number of function evaluations (F.E.) = k + iterations * m
-        acor_iterations = 50    # 50 iterations = 550 F.E.
+        acor_iterations = 45    # 45 iterations = 500 F.E.
         
         total_cost = 0.0
         for objective_function, function_str in zip(train_functions, functions_names):
@@ -103,22 +99,27 @@ def define_smac_cost(train_functions, functions_names, functions_bounding, funct
     return cost
     
 def extract_linear_nonlinear_results():
+    # SMAC
+    from ConfigSpace.hyperparameters import UniformFloatHyperparameter
+    from smac.configspace import ConfigurationSpace
+    from smac.facade.smac_hpo_facade  import SMAC4HPO
+    from smac.scenario.scenario import Scenario
+
     train_functions = [rosenbrock, schwefel, ackley, griewank, himmelblau]
     train_functions_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
     mechanisms = ['ACS', 'AGD']               
     func_evals_smac = 1000
     
-    functions_bounding = {'rosenbrock':  False,
-                         'schwefel':    True, 
-                         'ackley':      True, 
-                         'griewank':    True, 
-                         'himmelblau':  True}
-                            
-    functions_ranges = {'rosenbrock':   [-10, 10],   # unbounded, initialization only
-                       'schwefel':      [-500, 500],
-                       'ackley':        [-15, 30],  
-                       'griewank':      [-600, 600],
-                       'himmelblau':    [-6,6]}     
+    functions_bounding = {  'rosenbrock': False,
+                            'schwefel':   True, 
+                            'ackley':     True, 
+                            'griewank':   True, 
+                            'himmelblau': True}
+    functions_ranges = {    'rosenbrock': [-10  , 10],   # unbounded, values used in initialization only
+                            'schwefel':   [-500 , 500],
+                            'ackley':     [-15  , 30],  
+                            'griewank':   [-600 , 600],
+                            'himmelblau': [-6   , 6]}     
                         
     mechanism_ranges = {'ACS':[1e-8, 1e-1],
                         'AGD':[0.01, 0.99]}
@@ -173,11 +174,11 @@ def run_lin_nlin_smac_params():
                          'griewank':    True, 
                          'himmelblau':  True}
                             
-    functions_ranges = {'rosenbrock':   [-10, 10],   # unbounded, initialization only
-                       'schwefel':      [-500, 500],
-                       'ackley':        [-15, 30],  
-                       'griewank':      [-600, 600],
-                       'himmelblau':    [-6,6]} 
+    functions_ranges = {'rosenbrock':   [-10    , 10],   # unbounded, values used in initialization only
+                       'schwefel':      [-500   , 500],
+                       'ackley':        [-15    , 30],  
+                       'griewank':      [-600   , 600],
+                       'himmelblau':    [-6     , 6]} 
 
     for linearity, linearity_str in zip([True, False],['linear', 'nonlinear']):
         for mechanism in mechanisms:

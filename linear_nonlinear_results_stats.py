@@ -24,7 +24,7 @@ import linear_nonlinear_experiment
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_avg_std():
     mechanisms = ['ACS', 'AGD']
-    function_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
+    function_names = ['ackley', 'griewank', 'himmelblau', 'rosenbrock', 'schwefel']
     
     for mechanism in mechanisms:
         print('[' + mechanism + 'ACOr]')
@@ -43,7 +43,7 @@ def print_avg_std():
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_p_values():
     mechanisms = ['ACS', 'AGD']
-    function_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
+    function_names = ['ackley', 'griewank', 'himmelblau', 'rosenbrock', 'schwefel']
     
     for mechanism in mechanisms:
         print('[' + mechanism + 'ACOr]')

@@ -40,21 +40,21 @@ is_bounded = [True, True, True]
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACOr")
 k = 50;  pop_size = 10;  q = 0.01; xi = 0.85
-num_iterations = (num_func_evals - k) / pop_size
-if not (num_iterations.is_integer()):
-    print("Error, number of function evaluations subtracted by k is not divisible by population size")
-    exit(-1)
-num_iterations = int(num_iterations)
-print("# iterations = %d" % num_iterations)
+# num_iterations = (num_func_evals - k) / pop_size
+# if not (num_iterations.is_integer()):
+    # print("Error, number of function evaluations subtracted by k is not divisible by population size")
+    # exit(-1)
+# num_iterations = int(num_iterations)
+# print("# iterations = %d" % num_iterations)
 
 colony = ant_colony_for_continuous_domains.ACOr()  
 colony.set_verbosity(False)
 colony.set_cost(ackley)
-colony.set_parameters(num_iterations, pop_size, k, q, xi)
+colony.set_parameters(pop_size, k, q, xi, [num_func_evals])
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
-
+"""
 # ACSACOr
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACSACOr")
@@ -123,7 +123,7 @@ colony.set_parameters(num_iterations, pop_size, k, min_q, max_q, min_xi, max_xi,
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
-"""
+
 # SA
 print("SA")
 sa = simulated_annealing.SA()

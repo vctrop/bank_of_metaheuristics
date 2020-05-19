@@ -32,10 +32,11 @@ class ACOr(Base):
         super().__init__()
         
         # Initial algorithm parameters
+        self.relative_iterations = None                 # Array containing the iterations at which best solutions are reported
         self.num_iter = 0                               # Number of iterations
         self.pop_size = 5                               # Population size
         self.k = 50                                     # Archive size
-        self.q = 0.01                                    # Locality of search (selection of pivot ants)
+        self.q = 0.01                                   # Locality of search (selection of pivot ants)
         self.xi = 0.85                                  # Speed of convergence (spreadness of ant generation)
         
         # Optimization results
@@ -43,14 +44,22 @@ class ACOr(Base):
         self.best_solution = None                       # Best solution of the archive
         
 
-    def set_parameters(self, num_iter, pop_size, k, q, xi):
+    def set_parameters(self, pop_size, k, q, xi, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
-        if num_iter <= 0:
-            print("Number of iterations must be greater than zero")
+        if len(function_evaluations_array) == 0:
+            print("Error, objective function evaluation array must not be empty")
             exit(-1)
-            
-        self.num_iter = num_iter
+        
+        function_evaluations_array = np.array(function_evaluations_array)
+        # Number of function evaluations for ACOr: pop_size * num_iterations
+        self.relative_iterations = (function_evaluations_array - k) / pop_size
+        all_divisible = (np.array([x.is_integer() for x in self.relative_iterations])).all()
+        if not all_divisible:
+            print("Error, at least one number of function evaluations subtracted by k is not divisible by population size m")
+            exit(-1)
+        
+        self.num_iter = int(np.max(self.relative_iterations))
         self.pop_size = pop_size
         self.k = k
         self.q = q
@@ -112,6 +121,9 @@ class ACOr(Base):
             print("Error, cost function must be defined prior to optimization")
             exit(-1)
         
+        # Keep solutions defined by function_evaluations_array
+        recorded_solutions = []
+        
         # Initialize the archive by random sampling, respecting each variable's boundaries   
         if self.verbosity:   print("[INITIALIZING SOLUTION ARCHIVE]")
         pop = np.zeros((self.pop_size, self.num_variables +1))
@@ -128,7 +140,6 @@ class ACOr(Base):
         p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
         
         if self.verbosity:   print("ALGORITHM MAIN LOOP")
-        
         # Algorithm runs until it reaches the determined number of iterations
         for iteration in range(self.num_iter):
             if self.verbosity:
@@ -172,10 +183,13 @@ class ACOr(Base):
             # Sort solution archive according to the fitness of each solution
             self.SA = self.SA[self.SA[:, -1].argsort()]                                                         
             # Remove worst solutions
-            self.SA = self.SA[0:self.k, :]                                                                      
+            self.SA = self.SA[0:self.k, :]   
+            # Extract current best solution
+            self.best_solution = self.SA[0, :]
+            if (self.relative_iterations - 1 == iteration).any():
+                recorded_solutions.append(self.best_solution)
             
-        self.best_solution = self.SA[0, :]
-        return self.best_solution  
+        return recorded_solutions  
         
 ## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011) can be applied to ACOr, and possibly many other swarm-based metaheuristics.
 
@@ -219,7 +233,7 @@ class ACSACOr(SRAACOr):
         self.sigmoid_Q = None
         self.sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, xi, min_q, max_q, control_linearity):
+    def set_parameters(self, pop_size, k, xi, min_q, max_q, control_linearity, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_q > max_q:
@@ -232,9 +246,8 @@ class ACSACOr(SRAACOr):
             print("Error, nonlinear control is only defined for maximum and minimum values between 0 and 1, excluding limit points")
             exit(-1)
             
-            
         # Parameter setting from ACOr class
-        super().set_parameters(num_iter, pop_size, k, max_q, xi)    
+        super().set_parameters(pop_size, k, max_q, xi, function_evaluations_array)    
 
         # Minimum and maximum of adaptive q
         self.min_q = min_q
@@ -279,7 +292,7 @@ class AGDACOr(SRAACOr):
         self.sigmoid_Q = None
         self.sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, q, min_xi, max_xi, control_linearity):
+    def set_parameters(self, pop_size, k, q, min_xi, max_xi, control_linearity, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_xi > max_xi:
@@ -293,7 +306,7 @@ class AGDACOr(SRAACOr):
             exit(-1)
             
         # Parameter setting from ACOr class
-        super().set_parameters(num_iter, pop_size, k, q, max_xi)    
+        super().set_parameters(pop_size, k, q, max_xi, function_evaluations_array)    
 
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi
@@ -344,7 +357,7 @@ class MAACOr(SRAACOr):
         self.q_sigmoid_Q = None
         self.q_sigmoid_B = None
     
-    def set_parameters(self, num_iter, pop_size, k, min_q, max_q, min_xi, max_xi, q_control_linearity, xi_control_linearity):
+    def set_parameters(self, pop_size, k, min_q, max_q, min_xi, max_xi, q_control_linearity, xi_control_linearity, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
         if min_xi > max_xi or min_q > max_q:
@@ -358,7 +371,7 @@ class MAACOr(SRAACOr):
             exit(-1)
             
         # Parameter setting from ACOr class
-        super().set_parameters(num_iter, pop_size, k, max_q, max_xi)    
+        super().set_parameters(pop_size, k, max_q, max_xi, function_evaluations_array)
 
         # Minimum and maximum of adaptive xi
         self.min_xi = min_xi

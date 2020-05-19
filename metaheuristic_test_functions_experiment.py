@@ -63,7 +63,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         m = 10    
         xi = 0.85
         
-        q_dict = np.load('./results/linear_nonlinear/nonlinear_ACS.npy')
+        q_dict = np.load('./results/linear_nonlinear/linear_ACS.npy')
         q_min = q_dict.item()['min']
         q_max = q_min + q_dict.item()['max_minus_min']
         if q_max >= 1:
@@ -78,7 +78,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         
         metaheuristic = ACSACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, xi, q_min, q_max, linear_control, function_evals_array)
+        metaheuristic.set_parameters(m, k, xi, q_min, q_max, True, function_evals_array)
     
     # AGDACOr
     else if metaheuristic_name.lower() == 'agdacor':
@@ -86,7 +86,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         k = 50
         m = 10    
         q = 1e-4
-        xi_dict = np.load('./results/linear_nonlinear/nonlinear_AGD.npy')
+        xi_dict = np.load('./results/linear_nonlinear/linear_AGD.npy')
         xi_min = xi_dict.item()['min']
         xi_max = xi_min + xi_dict.item()['max_minus_min']
         if xi_max >= 1:
@@ -100,19 +100,19 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         
         metaheuristic = AGDACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, q, xi_min, xi_max, linear_control, function_evals_array)
+        metaheuristic.set_parameters(m, k, q, xi_min, xi_max, True, function_evals_array)
     
     # MAACOr
     else if metaheuristic_name.lower() == 'maacor':
         
         k = 50
         m = 10    
-        q_dict = np.load('./results/linear_nonlinear/nonlinear_ACS.npy')
+        q_dict = np.load('./results/linear_nonlinear/linear_ACS.npy')
         q_min = q_dict.item()['min']
         q_max = q_min + q_dict.item()['max_minus_min']
         if q_max >= 1:
             q_max = 0.99
-        xi_dict = np.load('./results/linear_nonlinear/nonlinear_AGD.npy')
+        xi_dict = np.load('./results/linear_nonlinear/linear_AGD.npy')
         xi_min = xi_dict.item()['min']
         xi_max = xi_min + xi_dict.item()['max_minus_min']
         if xi_max >= 1:
@@ -127,7 +127,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
         
         metaheuristic = MAACOr()
         metaheuristic.set_verbosity(False)
-        metaheuristic.set_parameters(m, k, q_min, q_max, xi_min, xi_max, q_linearity, xi_linearity, function_evals_array)
+        metaheuristic.set_parameters(m, k, q_min, q_max, xi_min, xi_max, True, True, function_evals_array)
     
     # SA
     else if metaheuristic_name.lower() == 'sa':
@@ -209,7 +209,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array)
 def run_metaheuristic_test_functions():
     test_functions = [bohachevsky, cigar, rastrigin, schaffer, sphere]
     functions_names = ['bohachevsky', 'cigar', 'rastrigin', 'schaffer', 'sphere']
-    function_evaluations = [500, 1000, 5000, 10000, 25000, 50000, 75000, 100000]
+    function_evaluations = [10000 * i for i in range(1,21)]     # Establish 20 function evaluations of interested, uniformly from 10k to 200k
     functions_bounding = {  'bohachevsky':  True,
                             'cigar':        False, 
                             'rastrigin':    True, 
@@ -219,7 +219,7 @@ def run_metaheuristic_test_functions():
                             'cigar':        [-10    , 10],      # unbounded, values used in initialization only
                             'rastrigin':    [-5.12  , 5.12],  
                             'schaffer':     [-100   , 100],    
-                            'sphere':       [-10    , 10]}         # unbounded, values used in initialization only
+                            'sphere':       [-10    , 10]}      # unbounded, values used in initialization only
 
     num_runs = 100
 

@@ -1,0 +1,104 @@
+[ACSACOr]
+ACKLEY
+linear
+1.562E-07 (1.337E-07)
+nonlinear
+3.354E-07 (3.384E-07)
+
+
+GRIEWANK
+linear
+2.286E-02 (1.476E-02)
+nonlinear
+2.773E-02 (1.795E-02)
+
+
+HIMMELBLAU
+linear
+8.449E-05 (5.396E-04)
+nonlinear
+9.005E-03 (3.608E-02)
+
+
+ROSENBROCK
+linear
+3.456E-02 (2.106E-01)
+nonlinear
+1.150E-02 (2.180E-02)
+
+
+SCHWEFEL
+linear
+6.295E+01 (7.187E+01)
+nonlinear
+5.377E+01 (6.516E+01)
+
+
+[AGDACOr]
+ACKLEY
+linear
+8.692E-07 (8.874E-07)
+nonlinear
+7.740E-02 (4.401E-01)
+
+
+GRIEWANK
+linear
+3.120E-02 (3.205E-02)
+nonlinear
+9.194E-02 (8.519E-02)
+
+
+HIMMELBLAU
+linear
+2.572E-12 (8.112E-12)
+nonlinear
+1.447E-24 (1.095E-23)
+
+
+ROSENBROCK
+linear
+3.678E-02 (2.160E-01)
+nonlinear
+9.822E-01 (2.777E+00)
+
+
+SCHWEFEL
+linear
+9.044E+01 (8.056E+01)
+nonlinear
+9.304E+01 (9.014E+01)
+
+
+[ACSACOr]
+ACKLEY
+p-value = 0.00001
+
+GRIEWANK
+p-value = 0.09137
+
+HIMMELBLAU
+p-value = 0.00000
+
+ROSENBROCK
+p-value = 0.59884
+
+SCHWEFEL
+p-value = 0.36950
+
+[AGDACOr]
+ACKLEY
+p-value = 0.00000
+
+GRIEWANK
+p-value = 0.00000
+
+HIMMELBLAU
+p-value = 0.00000
+
+ROSENBROCK
+p-value = 0.00002
+
+SCHWEFEL
+p-value = 0.04392
+
