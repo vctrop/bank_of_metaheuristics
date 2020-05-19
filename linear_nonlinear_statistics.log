@@ -1,104 +1,104 @@
 [ACSACOr]
 ACKLEY
 linear
-1.562E-07 (1.337E-07)
+4.039E-07 (4.068E-07)
 nonlinear
-3.354E-07 (3.384E-07)
+3.870E-07 (3.350E-07)
 
 
 GRIEWANK
 linear
-2.286E-02 (1.476E-02)
+2.807E-02 (1.818E-02)
 nonlinear
-2.773E-02 (1.795E-02)
+2.454E-02 (1.670E-02)
 
 
 HIMMELBLAU
 linear
-8.449E-05 (5.396E-04)
+9.586E-04 (4.560E-03)
 nonlinear
-9.005E-03 (3.608E-02)
+1.676E-02 (8.094E-02)
 
 
 ROSENBROCK
 linear
-3.456E-02 (2.106E-01)
+3.693E-02 (2.585E-01)
 nonlinear
-1.150E-02 (2.180E-02)
+1.101E-02 (2.870E-02)
 
 
 SCHWEFEL
 linear
-6.295E+01 (7.187E+01)
+6.128E+01 (6.184E+01)
 nonlinear
-5.377E+01 (6.516E+01)
+6.254E+01 (6.696E+01)
 
 
 [AGDACOr]
 ACKLEY
 linear
-8.692E-07 (8.874E-07)
+5.160E-02 (3.612E-01)
 nonlinear
-7.740E-02 (4.401E-01)
+2.146E-06 (1.742E-06)
 
 
 GRIEWANK
 linear
-3.120E-02 (3.205E-02)
+4.159E-02 (4.333E-02)
 nonlinear
-9.194E-02 (8.519E-02)
+2.362E-02 (1.672E-02)
 
 
 HIMMELBLAU
 linear
-2.572E-12 (8.112E-12)
+3.100E-20 (1.578E-19)
 nonlinear
-1.447E-24 (1.095E-23)
+9.119E-07 (8.513E-06)
 
 
 ROSENBROCK
 linear
-3.678E-02 (2.160E-01)
+1.890E-01 (9.302E-01)
 nonlinear
-9.822E-01 (2.777E+00)
+7.893E-03 (2.989E-02)
 
 
 SCHWEFEL
 linear
-9.044E+01 (8.056E+01)
+8.845E+01 (8.361E+01)
 nonlinear
-9.304E+01 (9.014E+01)
+6.633E+01 (7.550E+01)
 
 
 [ACSACOr]
 ACKLEY
-p-value = 0.00001
+p-value = 0.87975
 
 GRIEWANK
-p-value = 0.09137
+p-value = 0.12016
 
 HIMMELBLAU
-p-value = 0.00000
+p-value = 0.16903
 
 ROSENBROCK
-p-value = 0.59884
+p-value = 0.70783
 
 SCHWEFEL
-p-value = 0.36950
+p-value = 0.36040
 
 [AGDACOr]
 ACKLEY
 p-value = 0.00000
 
 GRIEWANK
-p-value = 0.00000
+p-value = 0.00481
 
 HIMMELBLAU
 p-value = 0.00000
 
 ROSENBROCK
-p-value = 0.00002
+p-value = 0.56119
 
 SCHWEFEL
-p-value = 0.04392
+p-value = 0.67236
 
