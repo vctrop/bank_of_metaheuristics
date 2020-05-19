@@ -64,7 +64,7 @@ def function_cost(function, variables_range, bounded, acor_mechanism, minimum, m
     
     # Get cost for the given function
     colony.set_cost(function)
-    function_cost = colony.optimize()[-1]
+    function_cost = colony.optimize()[-1][-1]
         
     return function_cost
     
@@ -86,13 +86,13 @@ def define_smac_cost(train_functions, functions_names, functions_bounding, funct
             maximum = 0.99
         
         # Number of function evaluations (F.E.) = k + iterations * m
-        acor_function_evals = 100#0
+        acor_function_evals = 1000
         
         total_cost = 0.0
         for objective_function, function_str in zip(train_functions, functions_names):
             variables_bounded   = functions_bounding[function_str]
             variables_range     = functions_ranges[function_str]
-            total_cost          += function_cost(objective_function, variables_range, variables_bounded, acor_mechanism, minimum, maximum, linear_control, acor_function_eval)
+            total_cost          += function_cost(objective_function, variables_range, variables_bounded, acor_mechanism, minimum, maximum, linear_control, acor_function_evals)
         
         return total_cost / len(train_functions)
         
@@ -108,7 +108,7 @@ def extract_linear_nonlinear_results():
     train_functions = [rosenbrock, schwefel, ackley, griewank, himmelblau]
     train_functions_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
     mechanisms = ['ACS', 'AGD']               
-    func_evals_smac = 10#00
+    func_evals_smac = 1000
     
     functions_bounding = {  'rosenbrock': False,
                             'schwefel':   True, 
