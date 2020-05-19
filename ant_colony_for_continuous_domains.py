@@ -141,6 +141,8 @@ class ACOr(Base):
         
         # Array containing indices of solution archive position
         x = np.linspace(1,self.k,self.k) 
+        w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
+        p = w/sum(w) 
         
         if self.verbosity:   print("ALGORITHM MAIN LOOP")
         # Algorithm runs until it reaches the determined number of iterations

@@ -179,7 +179,7 @@ class SA(Base):
                     # Has no effect in vanilla SA
                     self.negative_feedback()
                     
-            if (self.relative_iterations - 1 == global_i).any() == 0:
+            if (self.relative_iterations - 1 == global_i).any():
                 recorded_solutions.append(self.best_solution)
             
         return recorded_solutions
