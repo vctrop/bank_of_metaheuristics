@@ -50,9 +50,13 @@ class ACOr(Base):
         if len(function_evaluations_array) == 0:
             print("Error, objective function evaluation array must not be empty")
             exit(-1)
+        if pop_size <= 0 or k <= 0 or q <= 0 or xi <= 0:
+            print("Error, parameters must be non-null positives")
+            exit(-1)
+            
         
-        function_evaluations_array = np.array(function_evaluations_array)
         # Number of function evaluations for ACOr: pop_size * num_iterations
+        function_evaluations_array = np.array(function_evaluations_array)
         self.relative_iterations = (function_evaluations_array - k) / pop_size
         all_divisible = (np.array([x.is_integer() for x in self.relative_iterations])).all()
         if not all_divisible:
@@ -131,10 +135,10 @@ class ACOr(Base):
         
         for i in range(self.k):
             for j in range(self.num_variables): 
-                self.SA[i, j] = np.random.uniform(self.initial_ranges[j][0], self.initial_ranges[j][1])        # Initialize solution archive randomly
+                self.SA[i, j] = np.random.uniform(self.initial_ranges[j][0], self.initial_ranges[j][1])         # Initialize solution archive randomly
             self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])[0]                            # Get initial cost for each solution
-        self.SA = self.SA[self.SA[:, -1].argsort()]                                                    # Sort solution archive (best solutions first)
-
+        self.SA = self.SA[self.SA[:, -1].argsort()]                                                             # Sort solution archive (best solutions first)
+        
         x = np.linspace(1,self.k,self.k) 
         w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
         p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides

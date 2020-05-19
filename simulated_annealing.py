@@ -31,7 +31,7 @@ class SA(Base):
         super().__init__
         
         # Initial algorithm parameters
-        self.num_global_iter = 0                        # Maximum number of global iterations
+        self.relative_iterations = None                 # Array containing the iterations at which best solutions are reported
         self.num_local_iter = 0                         # Maximum number of local iterations
         self.temperature = 100.0                        # Temperature, which determines acceptance probability of Metropolis sampling
         self.cooling_constant = 0.99                    # Parameter for the exponential decay cooling schedule
@@ -43,14 +43,26 @@ class SA(Base):
         self.best_solution = None                       # Best solution of the archive
         
         
-    def set_parameters(self, num_global_iter, num_local_iter, initial_temperature, cooling_constant, step_size):
+    def set_parameters(self, initial_temperature, cooling_constant, step_size, num_local_iter, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
         # Input error checking
-        if num_global_iter <= 0 or num_local_iter <= 0:
-            print("Number of global and local iterations must be greater than zero")
+        if num_local_iter <= 0 or initial_temperature <= 0 or cooling_constant <= 0 or step_size <= 0:
+            print("Error, parameters must be non-null positives")
+            exit(-1)
+        if len(function_evaluations_array) == 0:
+            print("Error, objective function evaluation array must not be empty")
             exit(-1)
             
-        self.num_global_iter = num_global_iter    
+        # Number of function evaluations for SA: global_iterations * local_iterations
+        # global_iterations = np.max(function_evals_array) / local_iterations
+        function_evaluations_array = np.array(function_evaluations_array)
+        self.relative_iterations = (function_evaluations_array) / num_local_iter
+        all_divisible = (np.array([x.is_integer() for x in self.relative_iterations])).all()
+        if not all_divisible:
+            print("Error, at least one number of function evaluations is not divisible by the number of local iterations")
+            exit(-1)
+        
+        self.num_global_iter = int(np.max(self.relative_iterations))
         self.num_local_iter = num_local_iter     
         self.temperature = initial_temperature      
         self.cooling_constant = cooling_constant
@@ -105,9 +117,11 @@ class SA(Base):
         for i in range(self.num_variables):
             self.current_solution[i] = np.random.uniform(self.initial_ranges[i][0], self.initial_ranges[i][1])
         # Compute its cost considering that weights were modified
-        self.current_solution[-1] = self.cost_function(self.current_solution)
+        self.current_solution[-1] = self.cost_function(self.current_solution)[0]
         self.best_solution = np.array(self.current_solution)
 
+        # Keep solutions defined by function_evaluations_array
+        recorded_solutions = []
         if self.verbosity: print("[ALGORITHM MAIN LOOP]")
         # SA main loop
         for global_i in range(self.num_global_iter):
@@ -123,7 +137,7 @@ class SA(Base):
                 # Choose which variable will be pertubated
                 self.chosen_variable = np.random.randint(0, self.num_variables)      # [0, num_variables)
                 
-                # Pertubate the chosen variable
+                # Perturbate the chosen variable
                 perturbation = self.compute_perturbation()
                 pertubated_variable = self.current_solution[self.chosen_variable] + perturbation
                 
@@ -136,16 +150,19 @@ class SA(Base):
                 
                 candidate_solution = np.array(self.current_solution)
                 candidate_solution[self.chosen_variable] = pertubated_variable
-                candidate_solution[-1] = self.cost_function(candidate_solution)
+                candidate_solution[-1] = self.cost_function(candidate_solution)[0]
                 
                 # Decide if solution will replace the current one based on the Metropolis sampling algorithm
                 delta_J = candidate_solution[-1] - self.current_solution[-1] 
                 if delta_J < 0:
                     acceptance_probability = 1.0
+                    # Possibly update best solution seen during search until the moment
                     if candidate_solution[-1] < self.best_solution[-1]:
                         self.best_solution = np.array(candidate_solution)
                 else:
                     acceptance_probability = math.exp(-delta_J/self.temperature)
+                
+                
                 
                 # Candidate accepted
                 if np.random.rand() <= acceptance_probability:
@@ -162,8 +179,10 @@ class SA(Base):
                     # Has no effect in vanilla SA
                     self.negative_feedback()
                     
-        
-        return self.best_solution
+            if (self.relative_iterations - 1 == global_i).any() == 0:
+                recorded_solutions.append(self.best_solution)
+            
+        return recorded_solutions
 
         
 class ACFSA(SA):
@@ -173,52 +192,43 @@ class ACFSA(SA):
         """ Constructor """
         # Define verbosity and NULL problem definition
         super().__init__
-       
-        self.crystalization_factor = None       # Crystalization factors define the starndard deviation of the step size distribution for each variable at each itertion
+        self.crystallization_factor = None       # crystallization factors define the starndard deviation of the step size distribution for each variable at each itertion
         
-
-    def set_parameters(self, num_global_iter, num_local_iter, initial_temperature, cooling_constant):
+        
+    def set_parameters(self, initial_temperature, cooling_constant, num_local_iter, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
-        # Input error checking
-        if num_global_iter <= 0 or num_local_iter <= 0:
-            print("Number of global and local iterations must be greater than zero")
-            exit(-1)
-            
-        self.num_global_iter = num_global_iter    
-        self.num_local_iter = num_local_iter     
-        self.temperature = initial_temperature      
-        self.cooling_constant = cooling_constant
+        super().set_parameters(initial_temperature, cooling_constant, 1, num_local_iter, function_evaluations_array)
     
     
     def define_variables(self, initial_ranges, is_bounded):
         """ Defines the number of variables, their initial values ranges and wether or not these ranges constrain the variable during the search.
-            Defines crystalization_factor dimensionality """
+            Defines crystallization_factor dimensionality """
         super().define_variables(initial_ranges, is_bounded)
-        self.crystalization_factor = np.ones(self.num_variables)
+        self.crystallization_factor = np.ones(self.num_variables)
         
         
     def compute_perturbation(self):
         """ In ACFSA, perturbation is generated by sampling from Bates distribution,
-            with standard deviation inversely proportional to the square root of the crystalization_factor for the given variable """
+            with standard deviation inversely proportional to the square root of the crystallization_factor for the given variable """
         
-        if not (self.crystalization_factor[self.chosen_variable] % 1 == 0.0):
-            print("Crystalization factor must be an integer")
+        if not (self.crystallization_factor[self.chosen_variable] % 1 == 0.0):
+            print("Crystallization factor must be an integer")
             exit(-1)
             
-        random_array = np.random.uniform(low = -0.5, high = 0.5, size = int(self.crystalization_factor[self.chosen_variable]))
-        perturbation = np.sum(random_array) / self.crystalization_factor[self.chosen_variable]
+        random_array = np.random.uniform(low = -0.5, high = 0.5, size = int(self.crystallization_factor[self.chosen_variable]))
+        perturbation = np.sum(random_array) / self.crystallization_factor[self.chosen_variable]
         
         return perturbation
         
         
     def positive_feedback(self):
         """ Increases standard deviation of Bates distribution in perturbation """
-        self.crystalization_factor[self.chosen_variable] = math.ceil(self.crystalization_factor[self.chosen_variable]  / 4)
-        if self.crystalization_factor[self.chosen_variable] == 0:
-            self.crystalization_factor[self.chosen_variable] = 1
+        self.crystallization_factor[self.chosen_variable] = math.ceil(self.crystallization_factor[self.chosen_variable]  / 4)
+        if self.crystallization_factor[self.chosen_variable] == 0:
+            self.crystallization_factor[self.chosen_variable] = 1
         
         
     def negative_feedback(self):
         """ Decreases standard deviation of Bates distribution in perturbation """
-        if self.crystalization_factor[self.chosen_variable] < int(1e6):
-            self.crystalization_factor[self.chosen_variable] += 1
+        if self.crystallization_factor[self.chosen_variable] < int(1e6):
+            self.crystallization_factor[self.chosen_variable] += 1
