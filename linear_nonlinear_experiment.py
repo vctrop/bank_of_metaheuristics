@@ -29,7 +29,7 @@ from deap.benchmarks import rosenbrock, schwefel, ackley, griewank, himmelblau  
 
 # Given a function, an adaptive mechanism for ACOr, parameters and linearity of adaptive parameter control,
 #  return the average results of a number runs on a suite of functions
-def function_cost(function, variables_range, bounded, acor_mechanism, minimum, maximum, linear_control, num_iterations):
+def function_cost(function, variables_range, bounded, acor_mechanism, minimum, maximum, linear_control, function_evals):
     if not isinstance(acor_mechanism, str):
         print("Error, ACOr mechanism must be a string")
         exit(-1)
@@ -50,11 +50,11 @@ def function_cost(function, variables_range, bounded, acor_mechanism, minimum, m
     if acor_mechanism == "ACS":
         colony = ACSACOr()
         colony.set_verbosity(False)
-        colony.set_parameters(num_iterations, m, k, xi, minimum, maximum, linear_control)
+        colony.set_parameters(m, k, xi, minimum, maximum, linear_control, [function_evals])
     else:
         colony = AGDACOr()  
         colony.set_verbosity(False)
-        colony.set_parameters(num_iterations, m, k, q, minimum, maximum, linear_control)
+        colony.set_parameters(m, k, q, minimum, maximum, linear_control, [function_evals])
     
     # Define ranges and bounding of each variable
     dimensionality = 2                     # Number of variables for all functions
@@ -86,13 +86,13 @@ def define_smac_cost(train_functions, functions_names, functions_bounding, funct
             maximum = 0.99
         
         # Number of function evaluations (F.E.) = k + iterations * m
-        acor_iterations = 45    # 45 iterations = 500 F.E.
+        acor_function_evals = 100#0
         
         total_cost = 0.0
         for objective_function, function_str in zip(train_functions, functions_names):
             variables_bounded   = functions_bounding[function_str]
             variables_range     = functions_ranges[function_str]
-            total_cost          += function_cost(objective_function, variables_range, variables_bounded, acor_mechanism, minimum, maximum, linear_control, acor_iterations)
+            total_cost          += function_cost(objective_function, variables_range, variables_bounded, acor_mechanism, minimum, maximum, linear_control, acor_function_eval)
         
         return total_cost / len(train_functions)
         
@@ -108,7 +108,7 @@ def extract_linear_nonlinear_results():
     train_functions = [rosenbrock, schwefel, ackley, griewank, himmelblau]
     train_functions_names = ['rosenbrock', 'schwefel','ackley','griewank','himmelblau']
     mechanisms = ['ACS', 'AGD']               
-    func_evals_smac = 1000
+    func_evals_smac = 10#00
     
     functions_bounding = {  'rosenbrock': False,
                             'schwefel':   True, 
@@ -190,7 +190,7 @@ def run_lin_nlin_smac_params():
             if maximum >= 1:
                 maximum = 0.99
             
-            acor_iterations = 95       # 95 * 10 + 50 = 1000 F.E. 
+            acor_function_evals = 1000
             
             # For each train function, run a metaheuristic N times and save results
             for function, function_str in zip(train_functions, train_functions_names):        
@@ -200,7 +200,7 @@ def run_lin_nlin_smac_params():
                 # Run metaheuristic N times
                 function_costs = []
                 for i in range(metaheuristic_runs):
-                    cost = function_cost(function, variables_range, variables_bounded, mechanism, minimum, maximum, linearity, acor_iterations)
+                    cost = function_cost(function, variables_range, variables_bounded, mechanism, minimum, maximum, linearity, acor_function_evals)
                     function_costs.append(cost)
                     print(str(i) + '. ' + str(cost))
                 np.save('./results/linear_nonlinear/' + linearity_str + '_'+ mechanism + '_' + function_str + '_eval.npy', function_costs)
