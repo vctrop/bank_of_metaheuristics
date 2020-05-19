@@ -165,7 +165,8 @@ class PSO(Base):
             
             if (self.relative_iterations - 1 == iteration).any():
                     recorded_solutions.append(self.global_best)
-        return recorded_solutions
+        
+        return np.array(recorded_solutions)
         
         
 class AIWPSO(PSO):

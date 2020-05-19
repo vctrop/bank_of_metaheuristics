@@ -197,7 +197,7 @@ class ACOr(Base):
             if (self.relative_iterations - 1 == iteration).any():
                 recorded_solutions.append(self.best_solution)
             
-        return recorded_solutions  
+        return np.array(recorded_solutions)
         
 ## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011) can be applied to ACOr, and possibly many other swarm-based metaheuristics.
 

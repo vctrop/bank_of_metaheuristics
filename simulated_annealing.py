@@ -182,7 +182,7 @@ class SA(Base):
             if (self.relative_iterations - 1 == global_i).any():
                 recorded_solutions.append(self.best_solution)
             
-        return recorded_solutions
+        return np.array(recorded_solutions)
 
         
 class ACFSA(SA):
