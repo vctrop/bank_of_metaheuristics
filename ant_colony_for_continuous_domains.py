@@ -139,9 +139,8 @@ class ACOr(Base):
             self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])[0]                            # Get initial cost for each solution
         self.SA = self.SA[self.SA[:, -1].argsort()]                                                             # Sort solution archive (best solutions first)
         
+        # Array containing indices of solution archive position
         x = np.linspace(1,self.k,self.k) 
-        w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
-        p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
         
         if self.verbosity:   print("ALGORITHM MAIN LOOP")
         # Algorithm runs until it reaches the determined number of iterations
@@ -183,7 +182,10 @@ class ACOr(Base):
             # Compute success rate, updates xi and q. MUST be done after SA appended population, to take into account how many were accepted
             # Does nothing in vanilla ACOr
             self.handle_adaptions()
-            
+            # Update PDF from which ants sample their centers, according to updates in q parameter
+            w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
+            p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
+        
             # Sort solution archive according to the fitness of each solution
             self.SA = self.SA[self.SA[:, -1].argsort()]                                                         
             # Remove worst solutions
