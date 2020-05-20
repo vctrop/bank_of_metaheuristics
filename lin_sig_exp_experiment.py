@@ -107,7 +107,7 @@ def run_lin_sig_exp_mappings():
                     cost = function_cost(function, variables_range, variables_bounded, mechanism, map_type, metaheuristic_function_evals)
                     function_costs.append(cost)
                     print(str(i) + '. ' + str(cost))
-                np.save('./results/linear_nonlinear/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy', function_costs)
+                np.save('./results/lin_sig_exp/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy', function_costs)
                 
 
 if __name__ == '__main__':

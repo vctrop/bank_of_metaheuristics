@@ -18,8 +18,6 @@
 # 3rd party
 import numpy as np
 from scipy.stats import wilcoxon
-# Own
-import linear_nonlinear_experiment
 
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_avg_std():
@@ -33,7 +31,7 @@ def print_avg_std():
         
             for map_type in ['lin', 'sig', 'exp']:
                 print(map_type)
-                function_costs = np.load('./results/linear_nonlinear/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy')
+                function_costs = np.load('./results/lin_sig_exp/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy')
                 mean = np.mean(function_costs)
                 std  = np.std(function_costs)
                 print(str(format(mean, '.3E')) + ' (' + str(format(std, '.3E')) +')')
@@ -50,9 +48,9 @@ def print_p_values():
         for function_str in function_names:  
             print(function_str.upper())
             
-            lin_costs = np.load('./results/linear_nonlinear/lin' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            sig_costs = np.load('./results/linear_nonlinear/sig' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            exp_costs = np.load('./results/linear_nonlinear/exp' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            lin_costs = np.load('./results/lin_sig_exp/lin' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            sig_costs = np.load('./results/lin_sig_exp/sig' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            exp_costs = np.load('./results/lin_sig_exp/exp' + '_'+ mechanism + '_' + function_str + '_eval.npy')
             
             if ?:
                 _, pval = wilcoxon(linear_costs, nonlinear_costs)
