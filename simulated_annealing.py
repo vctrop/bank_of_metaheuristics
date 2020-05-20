@@ -150,7 +150,7 @@ class SA(Base):
                 
                 candidate_solution = np.array(self.current_solution)
                 candidate_solution[self.chosen_variable] = pertubated_variable
-                candidate_solution[-1] = self.cost_function(candidate_solution)[0]
+                candidate_solution[-1] = self.cost_function(candidate_solution)
                 
                 # Decide if solution will replace the current one based on the Metropolis sampling algorithm
                 delta_J = candidate_solution[-1] - self.current_solution[-1] 
