@@ -1,104 +1,81 @@
-[ACSACOr]
-ACKLEY
-linear
-4.039E-07 (4.068E-07)
-nonlinear
-3.870E-07 (3.350E-07)
-
-
-GRIEWANK
-linear
-2.807E-02 (1.818E-02)
-nonlinear
-2.454E-02 (1.670E-02)
-
-
-HIMMELBLAU
-linear
-9.586E-04 (4.560E-03)
-nonlinear
-1.676E-02 (8.094E-02)
-
-
+[AELACOr]
 ROSENBROCK
-linear
-3.693E-02 (2.585E-01)
-nonlinear
-1.101E-02 (2.870E-02)
+lin
+2.212E-01 (1.093E-01)
+sig
+1.540E-01 (6.202E-02)
+exp
+1.245E-01 (4.602E-02)
+(p-value) exp v sig = 0.000447
 
 
 SCHWEFEL
-linear
-6.128E+01 (6.184E+01)
-nonlinear
-6.254E+01 (6.696E+01)
+lin
+1.939E+02 (9.455E+01)
+sig
+1.894E+02 (7.972E+01)
+exp
+1.999E+02 (9.166E+01)
+(p-value) sig v lin = 0.628
+
+
+ACKLEY
+lin
+0.000E+00 (0.000E+00)
+sig
+0.000E+00 (0.000E+00)
+exp
+0.000E+00 (0.000E+00)
+
+
+GRIEWANK
+lin
+2.846E-02 (1.283E-02)
+sig
+3.255E-02 (1.245E-02)
+exp
+2.823E-02 (1.286E-02)
+(p-value) exp v lin = 0.967
 
 
 [AGDACOr]
-ACKLEY
-linear
-5.160E-02 (3.612E-01)
-nonlinear
-2.146E-06 (1.742E-06)
-
-
-GRIEWANK
-linear
-4.159E-02 (4.333E-02)
-nonlinear
-2.362E-02 (1.672E-02)
-
-
-HIMMELBLAU
-linear
-3.100E-20 (1.578E-19)
-nonlinear
-9.119E-07 (8.513E-06)
-
-
 ROSENBROCK
-linear
-1.890E-01 (9.302E-01)
-nonlinear
-7.893E-03 (2.989E-02)
+lin
+5.905E-02 (2.978E-01)
+sig
+4.349E-02 (2.513E-01)
+exp
+1.544E-01 (1.181E+00)
+(p-value) sig v lin = 0.708
 
 
 SCHWEFEL
-linear
-8.845E+01 (8.361E+01)
-nonlinear
-6.633E+01 (7.550E+01)
+lin
+1.588E+02 (1.065E+02)
+sig
+1.466E+02 (1.157E+02)
+exp
+1.706E+02 (1.167E+02)
+(p-value) sig v lin = 0.423
 
 
-[ACSACOr]
 ACKLEY
-p-value = 0.87975
+lin
+5.684E-16 (1.302E-15)
+sig
+3.197E-16 (1.017E-15)
+exp
+2.120E-02 (2.109E-01)
+(p-value) sig v lin = 0.108
+
 
 GRIEWANK
-p-value = 0.12016
+lin
+2.797E-02 (2.013E-02)
+sig
+2.736E-02 (2.077E-02)
+exp
+2.441E-02 (1.433E-02)
+(p-value) exp v sig = 0.389
 
-HIMMELBLAU
-p-value = 0.16903
-
-ROSENBROCK
-p-value = 0.70783
-
-SCHWEFEL
-p-value = 0.36040
-
-[AGDACOr]
-ACKLEY
-p-value = 0.00000
-
-GRIEWANK
-p-value = 0.00481
-
-HIMMELBLAU
-p-value = 0.00000
-
-ROSENBROCK
-p-value = 0.56119
-
-SCHWEFEL
-p-value = 0.67236
 
