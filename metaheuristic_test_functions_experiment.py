@@ -17,6 +17,7 @@
 
 # Python standard lib
 import sys
+import time
 # 3rd party
 import numpy as np
 from deap.benchmarks import bohachevsky, rastrigin, cigar, sphere, schaffer, himmelblau
@@ -161,6 +162,7 @@ def run_metaheuristic_test_functions(metaheuristic_name):
     # - 10k to 200k, 10k at a time (20 points)
     function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,21)]     
     #function_evaluations = [1000 * i for i in range(1,5)]     
+    
     # Number of times each metaheuristic will run in each function
     num_runs = 100
     #num_runs = 5
@@ -180,14 +182,20 @@ def run_metaheuristic_test_functions(metaheuristic_name):
         metaheuristic.set_cost(flatten_cost(function))
         
         costs_matrix = []
+        optimization_times = []
         for _ in range(num_runs):
             # An optimization call returns the solutions found during optimization for the specified function evaluation values in parameterization
+            time_start = time.process_time()
             solutions_at_FEs = metaheuristic.optimize()
             costs_array = solutions_at_FEs[:, -1]
+            time_end = time.process_time() 
+            
+            optimization_times.append(time_end - time_start)
             costs_matrix.append(costs_array)
             #print(costs_array)
         #print(np.sum(costs_matrix,0))
-        np.save('./results/metaheuristics_comparison/' + function_str + '_' + metaheuristic_name + '.npy', costs_matrix)
+        np.save('./results/metaheuristics_comparison/' + function_str + '_' + metaheuristic_name + '_costs.npy', costs_matrix)
+        np.save('./results/metaheuristics_comparison/' + function_str + '_' + metaheuristic_name + '_times.npy', optimization_times)
 
 
 if __name__ == '__main__':
