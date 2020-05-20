@@ -7,6 +7,7 @@ Accurate and comprehensible implementaton of multiple metaheuristics.
   - Deap (only to import benchmark functions)
 
 ## Metaheuristics implemented until now:
+<pre>
 - Ant colony optimization for continuous domains (ACOr).  Socha, 2006.
 - Adaptive center selection ACOr (ACSACOr).               Costa, 2020.
 - Adaptive generation dispersion ACOr (AGDACOr).          Costa, 2020.
@@ -15,3 +16,4 @@ Accurate and comprehensible implementaton of multiple metaheuristics.
 - Adaptive crystallization factor SA (ACFSA).             Martins, 2012.
 - Particle swarm optimization (PSO).                      Kennedy, 1995.
 - Adaptive inertia weight PSO (AIWPSO).                   Nickabadi, 2011.
+</pre>
