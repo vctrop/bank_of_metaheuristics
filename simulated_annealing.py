@@ -117,7 +117,7 @@ class SA(Base):
         for i in range(self.num_variables):
             self.current_solution[i] = np.random.uniform(self.initial_ranges[i][0], self.initial_ranges[i][1])
         # Compute its cost considering that weights were modified
-        self.current_solution[-1] = self.cost_function(self.current_solution)[0]
+        self.current_solution[-1] = self.cost_function(self.current_solution)
         self.best_solution = np.array(self.current_solution)
 
         # Keep solutions defined by function_evaluations_array

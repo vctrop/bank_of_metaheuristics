@@ -253,7 +253,7 @@ class SRAACOr(ACOr):
             self.lin_b[parameter] = self.min[parameter]
         elif self.map_type[parameter] == 'sig':
             self.sig_Q[parameter] = (self.sig_K - self.min[parameter]) / self.min[parameter]
-            self.sig_B[parameter] = math.log( (self.max[parameter] / (self.sig_K - self.max[parameter])) * self.sig_Q )
+            self.sig_B[parameter] = math.log( (self.max[parameter] / (self.sig_K - self.max[parameter])) * self.sig_Q[parameter])
         else:
             self.exp_A[parameter] = self.min[parameter]
             self.exp_B[parameter] = math.log( self.max[parameter] / self.min[parameter] )
@@ -311,8 +311,8 @@ class AELACOr(SRAACOr):
         if map_type != 'lin' and map_type != 'sig' and map_type != 'exp':
             print('Error, map type must be \'lin\', \'sig\' or \'exp\'')
             exit(-1)
-        if map_type == 'sig' and max_q >= self.sigmoid_K:
-            print('Error, maximum q must be lesser than sigmoid K = ' + str(self.sigmoid_K))
+        if map_type == 'sig' and max_q >= self.sig_K:
+            print('Error, maximum q must be lesser than sigmoid K = ' + str(self.sig_K))
         
         # Parameter setting from ACOr class
         super().set_parameters(pop_size, k, max_q, xi, function_evaluations_array)    
@@ -357,8 +357,8 @@ class AGDACOr(SRAACOr):
         if map_type != 'lin' and map_type != 'sig' and map_type != 'exp':
             print('Error, map type must be \'lin\', \'sig\' or \'exp\'')
             exit(-1)
-        if map_type == 'sig' and max_xi >= self.sigmoid_K:
-            print('Error, maximum xi must be lesser than sigmoid K = ' + str(self.sigmoid_K))
+        if map_type == 'sig' and max_xi >= self.sig_K:
+            print('Error, maximum xi must be lesser than sigmoid K = ' + str(self.sig_K))
         
         # Parameter setting from ACOr class
         super().set_parameters(pop_size, k, q, max_xi, function_evaluations_array)    
@@ -404,8 +404,8 @@ class BAACOr(SRAACOr):
         if  (q_map_type  != 'lin' and q_map_type  != 'sig' and q_map_type  != 'exp') or (xi_map_type != 'lin' and xi_map_type != 'sig' and xi_map_type != 'exp'):
             print('Error, map types must be \'lin\', \'sig\' or \'exp\'')
             exit(-1)
-        if (q_map_type == 'sig' and max_q >= self.sigmoid_K) or (xi_map_type == 'sig' and max_xi >= self.sigmoid_K):
-            print('Error, maximum parameters value must be lesser than sigmoid K = ' + str(self.sigmoid_K))
+        if (q_map_type == 'sig' and max_q >= self.sig_K) or (xi_map_type == 'sig' and max_xi >= self.sig_K):
+            print('Error, maximum parameters value must be lesser than sigmoid K = ' + str(self.sig_K))
             
         # Parameter setting from ACOr class
         super().set_parameters(pop_size, k, max_q, max_xi, function_evaluations_array)

@@ -131,7 +131,7 @@ class PSO(Base):
             
             for particle in range(self.population_size):
                 # Compute cost of new position
-                self.swarm_positions[particle, -1] = self.cost_function(self.swarm_positions[particle, :-1])[0]
+                self.swarm_positions[particle, -1] = self.cost_function(self.swarm_positions[particle, :-1])
                 
                 # Update personal best solution
                 if self.swarm_positions[particle, -1] < self.personal_bests[particle, -1]:
@@ -164,13 +164,16 @@ class PSO(Base):
                             self.swarm_positions[particle, var] = self.initial_ranges[var][1]        
             
             if (self.relative_iterations - 1 == iteration).any():
-                    recorded_solutions.append(self.global_best)
+                recorded_solutions.append(self.global_best)
         
         return np.array(recorded_solutions)
         
         
 class AIWPSO(PSO):
-    """ Class for the Adaptative Inertia Weight Particle Swarm Optimization (AIWPSO), following (Nickabadi et al., 2011) """
+    """ Class for the Adaptative Inertia Weight Particle Swarm Optimization (AIWPSO), following (Nickabadi et al., 2011).
+        Only the adaptive mechanism of AIWPSO is implemented here.
+        The paper also uses a mutation mechanism for the worst particle at each iteration, which is left unimplemented. """
+        
     def __init__(self):
         """ Constructor """
         super().__init__()

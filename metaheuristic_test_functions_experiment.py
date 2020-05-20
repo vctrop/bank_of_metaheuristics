@@ -19,9 +19,9 @@
 import sys
 # 3rd party
 import numpy as np
-from deap.benchmarks import bohachevsky, rastrigin, cigar, sphere, schaffer 
+from deap.benchmarks import bohachevsky, rastrigin, cigar, sphere, schaffer, himmelblau
 # Own
-from ant_colony_for_continuous_domains  import ACOr, ACSACOr, AGDACOr, MAACOr
+from ant_colony_for_continuous_domains  import ACOr, AELACOr, AGDACOr, BAACOr
 from particle_swarm_optimization        import PSO, AIWPSO
 from simulated_annealing                import SA, ACFSA
 
@@ -46,14 +46,14 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
         metaheuristic.set_verbosity(False)
         metaheuristic.set_parameters(m,  k, q, xi, function_evals_array)
     
-    # ACSACOr
-    elif metaheuristic_name.lower() == 'acsacor':
+    # AELACOr
+    elif metaheuristic_name.lower() == 'aelacor':
         # Parameters
         k = 50; m = 5; xi = 0.85
         q_min = 1e-4
         q_max = 1.0
         # Configure
-        metaheuristic = ACSACOr()
+        metaheuristic = AELACOr()
         metaheuristic.set_verbosity(False)
         metaheuristic.set_parameters(m, k, xi, q_min, q_max, False, function_evals_array)
     
@@ -68,8 +68,8 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
         metaheuristic.set_verbosity(False)
         metaheuristic.set_parameters(m, k, q, xi_min, xi_max, False, function_evals_array)
     
-    # MAACOr
-    elif metaheuristic_name.lower() == 'maacor':
+    # BAACOr
+    elif metaheuristic_name.lower() == 'baacor':
         # Parameters
         k = 50; m = 10
         q_min = 1e-4
@@ -77,7 +77,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
         xi_min = 0.1
         xi_max = 0.93
         # Configure
-        metaheuristic = MAACOr()
+        metaheuristic = BAACOr()
         metaheuristic.set_verbosity(False)
         metaheuristic.set_parameters(m, k, q_min, q_max, xi_min, xi_max, False, False, function_evals_array)
     
@@ -140,18 +140,20 @@ def flatten_cost(cost_function):
     
 def run_metaheuristic_test_functions(metaheuristic_name):
     # TEST FUNCTIONS 
-    test_functions = [bohachevsky, cigar, rastrigin, schaffer, sphere]
-    functions_names = ['bohachevsky', 'cigar', 'rastrigin', 'schaffer', 'sphere']
+    test_functions = [bohachevsky, cigar, rastrigin, schaffer, sphere, himmelblau]
+    functions_names = ['bohachevsky', 'cigar', 'rastrigin', 'schaffer', 'sphere', 'himmelblau']
     functions_bounding = {  'bohachevsky':  True,
                             'cigar':        False, 
                             'rastrigin':    True, 
                             'schaffer':     True, 
-                            'sphere':       False}
+                            'sphere':       False, 
+                            'himmelblau':   True}
     functions_ranges = {    'bohachevsky':  [-100   , 100],  
                             'cigar':        [-10    , 10],      # unbounded, values used in initialization only
                             'rastrigin':    [-5.12  , 5.12],  
                             'schaffer':     [-100   , 100],    
-                            'sphere':       [-10    , 10]}      # unbounded, values used in initialization only
+                            'sphere':       [-10    , 10],
+                            'himmelblau':   [-6     , 6]}      # unbounded, values used in initialization only
     
     
     # (TODO)Establish function evaluations of interest:

@@ -23,18 +23,17 @@ import linear_nonlinear_experiment
 
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_avg_std():
-    mechanisms = ['ACS', 'AGD']
-    function_names = ['ackley', 'griewank', 'himmelblau', 'rosenbrock', 'schwefel']
+    function_names = ['rosenbrock', 'schwefel','ackley','griewank']
     
-    for mechanism in mechanisms:
+    for mechanism in ['AEL', 'AGD']:
         print('[' + mechanism + 'ACOr]')
         
         for function_str in function_names:  
             print(function_str.upper())
         
-            for linearity_str in ['linear', 'nonlinear']:
-                print(linearity_str)
-                function_costs = np.load('./results/linear_nonlinear/' + linearity_str + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            for map_type in ['lin', 'sig', 'exp']:
+                print(map_type)
+                function_costs = np.load('./results/linear_nonlinear/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy')
                 mean = np.mean(function_costs)
                 std  = np.std(function_costs)
                 print(str(format(mean, '.3E')) + ' (' + str(format(std, '.3E')) +')')
@@ -42,8 +41,8 @@ def print_avg_std():
             
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_p_values():
-    mechanisms = ['ACS', 'AGD']
-    function_names = ['ackley', 'griewank', 'himmelblau', 'rosenbrock', 'schwefel']
+    mechanisms = ['AEL', 'AGD']
+    function_names = ['rosenbrock', 'schwefel','ackley','griewank']
     
     for mechanism in mechanisms:
         print('[' + mechanism + 'ACOr]')
@@ -51,12 +50,17 @@ def print_p_values():
         for function_str in function_names:  
             print(function_str.upper())
             
-            linear_costs    = np.load('./results/linear_nonlinear/linear' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            nonlinear_costs = np.load('./results/linear_nonlinear/nonlinear' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            _, pval = wilcoxon(linear_costs, nonlinear_costs)
+            lin_costs = np.load('./results/linear_nonlinear/lin' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            sig_costs = np.load('./results/linear_nonlinear/sig' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            exp_costs = np.load('./results/linear_nonlinear/exp' + '_'+ mechanism + '_' + function_str + '_eval.npy')
+            
+            if ?:
+                _, pval = wilcoxon(linear_costs, nonlinear_costs)
+            else:
+                
             print('p-value = ' + str(format(pval, '.5f')) + '\n')
             
 
 print_avg_std()
-print_p_values()
+#print_p_values()
 
