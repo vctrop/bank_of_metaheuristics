@@ -35,71 +35,78 @@ ranges = [[-5,5],
 
 is_bounded = [True, True, True]
      
+def flatten_cost(cost_function):
+    def flattened_cost(x):
+        return cost_function(x)[0]
+    return flattened_cost
    
 # ACOr
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACOr")
 # Parameters
-k = 50;  pop_size = 10;  q = 0.01; xi = 0.85
+k = 50;  pop_size = 2;  q = 0.01; xi = 0.85
 # Configure and run
 colony = ant_colony_for_continuous_domains.ACOr()  
 colony.set_verbosity(False)
-colony.set_cost(ackley)
+colony.set_cost(flatten_cost(ackley))
 colony.set_parameters(pop_size, k, q, xi, [num_func_evals])
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
 
-# ACSACOr
+# AELACOr
 # Total # of function evaluations: archive_size + population_size * num_iterations
-print("ACSACOr")
+print("AELACOr")
 # Parameters
-k = 50;  pop_size = 10; base_q = 0.01; xi = 0.85
-min_q = base_q - base_q/2
-max_q = base_q + base_q/2
+k = 50;  pop_size = 10; xi = 0.85
+min_q = 1e-4
+max_q = 1.0
 # Configure and run
-colony = ant_colony_for_continuous_domains.ACSACOr()
+colony = ant_colony_for_continuous_domains.AELACOr()
 colony.set_verbosity(False)
-colony.set_cost(ackley)
-colony.set_parameters(pop_size, k, xi, min_q, max_q, False, [num_func_evals])
+colony.set_cost(flatten_cost(ackley))
+colony.set_parameters(pop_size, k, xi, min_q, max_q, 'lin', [num_func_evals])
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
+
 
 # AGDACOr
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("AGDACOr")
 # Parameters
-k = 50;  pop_size = 10; base_xi = 0.85; q = 0.01
-min_xi = base_xi - base_xi/2
-max_xi = 0.99
+k = 50;  pop_size = 10; q = 0.01
+min_xi = 0.1
+max_xi = 0.93
 # Configure and run
 colony = ant_colony_for_continuous_domains.AGDACOr()  
 colony.set_verbosity(False)
-colony.set_cost(ackley)
-colony.set_parameters(pop_size, k, q, min_xi, max_xi, False, [num_func_evals])
+colony.set_cost(flatten_cost(ackley))
+colony.set_parameters(pop_size, k, q, min_xi, max_xi, 'lin', [num_func_evals])
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
 
 
-# MAACOr
-print("MAACOr")
+# BAACOr
+print("BAACOr")
 # Parameters
-k = 50;  pop_size = 10;  base_q = 0.01; base_xi = 0.85
-min_xi = base_xi - base_xi/2
-max_xi = 0.99
-min_q = base_q - base_q/2
-max_q = base_q + base_q/2
+k = 50;  pop_size = 10;
+min_q = 1e-4  
+max_q = 1.0   
+min_xi = 0.1
+max_xi = 0.93
+
 # Configure and run
-colony = ant_colony_for_continuous_domains.MAACOr()  
+colony = ant_colony_for_continuous_domains.BAACOr()  
 colony.set_verbosity(False)
-colony.set_cost(ackley)
-colony.set_parameters(pop_size, k, min_q, max_q, min_xi, max_xi, False, False, [num_func_evals])
+colony.set_cost(flatten_cost(ackley))
+colony.set_parameters(pop_size, k, min_q, max_q, min_xi, max_xi, 'lin', 'lin', [num_func_evals])
 colony.define_variables(ranges, is_bounded)
 solution = colony.optimize()
 print(solution)
 
+"""
 # SA
 print("SA")
 # Parameters
@@ -108,7 +115,7 @@ local_iterations = 100
 # Configure and run
 sa = simulated_annealing.SA()
 sa.set_verbosity(False)
-sa.set_cost(ackley)
+sa.set_cost(flatten_cost(ackley))
 sa.set_parameters(initial_temperature, cooling_constant, step_size, local_iterations, [num_func_evals])
 sa.define_variables(ranges, is_bounded)
 solution = sa.optimize()
@@ -122,7 +129,7 @@ local_iterations = 100
 # Configure and run
 acfsa = simulated_annealing.ACFSA()
 acfsa.set_verbosity(False)
-acfsa.set_cost(ackley)
+acfsa.set_cost(flatten_cost(ackley))
 acfsa.set_parameters(initial_temperature, cooling_constant, local_iterations, [num_func_evals])
 acfsa.define_variables(ranges, is_bounded)
 solution = acfsa.optimize()
@@ -135,7 +142,7 @@ swarm = particle_swarm_optimization.PSO()
 swarm_size = 20;  personal_acceleration = 2;  global_acceleration = 2
 # Configure and run
 swarm.set_verbosity(False)
-swarm.set_cost(ackley)
+swarm.set_cost(flatten_cost(ackley))
 swarm.set_parameters(swarm_size, personal_acceleration, global_acceleration, [num_func_evals])
 swarm.define_variables(ranges, is_bounded)
 solution = swarm.optimize()
@@ -150,8 +157,9 @@ swarm_size = 20;  personal_acceleration = 2;  global_acceleration = 2
 min_inertia = 0.3; max_inertia = 0.99
 # Configure and run
 swarm.set_verbosity(False)
-swarm.set_cost(ackley)
+swarm.set_cost(flatten_cost(ackley))
 swarm.set_parameters(swarm_size, personal_acceleration, global_acceleration, min_inertia, max_inertia, [num_func_evals])
 swarm.define_variables(ranges, is_bounded)
 solution = swarm.optimize()
 print(solution)
+"""
