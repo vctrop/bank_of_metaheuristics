@@ -136,7 +136,7 @@ class ACOr(Base):
         for i in range(self.k):
             for j in range(self.num_variables): 
                 self.SA[i, j] = np.random.uniform(self.initial_ranges[j][0], self.initial_ranges[j][1])         # Initialize solution archive randomly
-            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])[0]                            # Get initial cost for each solution
+            self.SA[i, -1] = self.cost_function(self.SA[i, 0:self.num_variables])                               # Get initial cost for each solution
         self.SA = self.SA[self.SA[:, -1].argsort()]                                                             # Sort solution archive (best solutions first)
         
         # Array containing indices of solution archive position
@@ -176,7 +176,7 @@ class ACOr(Base):
                             # pop[ant, var] = np.random.uniform(self.initial_ranges[var][0], self.initial_ranges[var][1])
                     
                     
-                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_variables])[0]                                     # Evaluate cost of new solution
+                pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_variables])                                     # Evaluate cost of new solution
             
             # Append new solutions to the Archive
             self.SA = np.append(self.SA, pop, axis = 0)                                                         
@@ -184,6 +184,7 @@ class ACOr(Base):
             # Compute success rate, updates xi and q. MUST be done after SA appended population, to take into account how many were accepted
             # Does nothing in vanilla ACOr
             self.handle_adaptions()
+            #print('sr/xi/q = ' + str(self.success_rate) + '/' + str(self.xi) + '/' + str(self.q))
             # Update PDF from which ants sample their centers, according to updates in q parameter
             w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
             p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
@@ -218,11 +219,11 @@ class SRAACOr(ACOr):
         acceptance_count = np.sum(binary_reference[0:self.k])
         self.success_rate = acceptance_count / self.pop_size
         
-    def parameterized_line(self, a, b):
-        return a * self.success_rate + b
+    def parameterized_line(self, a, b, x):
+        return a * x + b
         
-    def parameterized_sigmoid(self, Q, B):
-        return 1 / (1 + Q * math.exp(- B * self.success_rate))
+    def parameterized_sigmoid(self, Q, B, x):
+        return 1 / (1 + Q * math.exp(- B * x))
         
     
 # Adaptive center selection ACOr
@@ -278,9 +279,9 @@ class ACSACOr(SRAACOr):
         
         # Compute new q
         if self.control_linearity == True:
-            self.q = self.parameterized_line(self.line_a, self.line_b)
+            self.q = self.parameterized_line(self.line_a, self.line_b, (1 - self.success_rate))
         else:
-            self.q = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B)
+            self.q = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B, (1 - self.success_rate))
        
     
 # Adaptive generation dispersion ACOr
@@ -337,9 +338,9 @@ class AGDACOr(SRAACOr):
         
         # Compute new xi
         if self.control_linearity == True:
-            self.xi = self.parameterized_line(self.line_a, self.line_b)
+            self.xi = self.parameterized_line(self.line_a, self.line_b, self.success_rate)
         else:
-            self.xi = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B)
+            self.xi = self.parameterized_sigmoid(self.sigmoid_Q, self.sigmoid_B, self.success_rate)
     
 # Multi-adaptive ACOr
 class MAACOr(SRAACOr):
@@ -415,9 +416,9 @@ class MAACOr(SRAACOr):
         
         # Compute new xi
         if self.xi_control_linearity == True:
-            self.xi = self.parameterized_line(self.xi_line_a, self.xi_line_b)
+            self.xi = self.parameterized_line(self.xi_line_a, self.xi_line_b, self.success_rate)
         else:
-            self.xi = self.parameterized_sigmoid(self.xi_sigmoid_Q, self.xi_sigmoid_B)
+            self.xi = self.parameterized_sigmoid(self.xi_sigmoid_Q, self.xi_sigmoid_B, self.success_rate)
         
       
     def control_q(self):
@@ -428,7 +429,7 @@ class MAACOr(SRAACOr):
         
         # Compute new q
         if self.q_control_linearity == True:
-            self.q = self.parameterized_line(self.q_line_a, self.q_line_b)
+            self.q = self.parameterized_line(self.q_line_a, self.q_line_b, (1 - self.success_rate))
         else:
-            self.q = self.parameterized_sigmoid(self.q_sigmoid_Q, self.q_sigmoid_B)
+            self.q = self.parameterized_sigmoid(self.q_sigmoid_Q, self.q_sigmoid_B, (1 - self.success_rate))
        
