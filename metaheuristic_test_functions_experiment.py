@@ -40,7 +40,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # ACOr
     if metaheuristic_name.lower() == 'acor':
         # Parameters
-        k = 50; m = 2; q = 1e-4; xi = 0.85
+        k = 50; m = 2; q = 1e-2; xi = 0.85
         # Configure
         metaheuristic = ACOr()
         metaheuristic.set_verbosity(False)
@@ -50,7 +50,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     elif metaheuristic_name.lower() == 'aelacor':
         # Parameters
         k = 50; m = 5; xi = 0.85
-        q_min = 1e-4
+        q_min = 1e-2
         q_max = 1.0
         # Configure
         metaheuristic = AELACOr()
@@ -60,7 +60,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # AGDACOr
     elif metaheuristic_name.lower() == 'agdacor':
         # Parameters
-        k = 50; m = 10; q = 1e-4
+        k = 50; m = 10; q = 1e-2
         xi_min = 0.1
         xi_max = 0.93
         # Configure
@@ -72,7 +72,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     elif metaheuristic_name.lower() == 'baacor':
         # Parameters
         k = 50; m = 10
-        q_min = 1e-4
+        q_min = 1e-2
         q_max = 1.0
         xi_min = 0.1
         xi_max = 0.93

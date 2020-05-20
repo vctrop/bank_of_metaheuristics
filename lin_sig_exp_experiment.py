@@ -48,18 +48,18 @@ def function_cost(function, variables_range, bounded, adaptive_mechanism, map_ty
     # Number of function evaluations (F.E.) = k + iterations * m
     k = 50
     m = 10    
-    q = 1e-4
-    xi = 0.85
     
     if adaptive_mechanism == "AEL":
         colony = AELACOr()
         colony.set_verbosity(False)
-        min_q = 1e-4
+        xi = 0.85
+        min_q = 1e-2
         max_q = 1.0
         colony.set_parameters(m, k, xi, min_q, max_q, map_type, [function_evals])
     else:
         colony = AGDACOr()  
         colony.set_verbosity(False)
+        q = 1e-2
         min_xi = 0.1
         max_xi = 0.93
         colony.set_parameters(m, k, q, min_xi, max_xi, map_type, [function_evals])

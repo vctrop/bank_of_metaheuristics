@@ -44,7 +44,7 @@ def flatten_cost(cost_function):
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACOr")
 # Parameters
-k = 50;  pop_size = 2;  q = 0.01; xi = 0.85
+k = 50;  pop_size = 2;  q = 1e-2; xi = 0.85
 # Configure and run
 colony = ant_colony_for_continuous_domains.ACOr()  
 colony.set_verbosity(False)
@@ -59,7 +59,7 @@ print(solution)
 print("AELACOr")
 # Parameters
 k = 50;  pop_size = 10; xi = 0.85
-min_q = 1e-4
+min_q = 1e-2
 max_q = 1.0
 # Configure and run
 colony = ant_colony_for_continuous_domains.AELACOr()
@@ -92,7 +92,7 @@ print(solution)
 print("BAACOr")
 # Parameters
 k = 50;  pop_size = 10;
-min_q = 1e-4  
+min_q = 1e-2
 max_q = 1.0   
 min_xi = 0.1
 max_xi = 0.93
