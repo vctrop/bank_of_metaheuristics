@@ -156,10 +156,10 @@ def run_metaheuristic_test_functions(metaheuristic_name):
                             'himmelblau':   [-6     , 6]}      # unbounded, values used in initialization only
     
     
-    # (TODO)Establish function evaluations of interest:
-    # - 500 to 10k, 500 at a time 
-    # - 10k to 200k, 10k at a time
-    function_evaluations = [10000 * i for i in range(1,21)]     
+    # Establish function evaluations of interest:
+    # - 500 to 10k, 500 at a time  (19 points)
+    # - 10k to 200k, 10k at a time (20 points)
+    function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,21)]     
     #function_evaluations = [1000 * i for i in range(1,5)]     
     # Number of times each metaheuristic will run in each function
     num_runs = 100
