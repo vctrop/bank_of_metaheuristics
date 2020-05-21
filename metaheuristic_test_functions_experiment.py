@@ -161,11 +161,11 @@ def run_metaheuristic_test_functions(metaheuristic_name):
     # - 500 to 10k, 500 at a time  (19 points)
     # - 10k to 200k, 10k at a time (20 points)
     function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,11)]     
-    #function_evaluations = [1000 * i for i in range(1,5)]     
+    #function_evaluations = [1000]     
     
     # Number of times each metaheuristic will run in each function
     num_runs = 100
-    #num_runs = 5
+    #num_runs = 10
 
     # For all test objective functions, run the given metaheuristic for a number of times
     for function, function_str in zip(test_functions, functions_names):
@@ -174,7 +174,7 @@ def run_metaheuristic_test_functions(metaheuristic_name):
         # Configure search space of the objective function
         variables_bounded = functions_bounding[function_str]
         variables_range = functions_ranges[function_str]
-        dimensionality = 5                     # Number of variables for all functions
+        dimensionality = 3                     # Number of variables for all functions
         ranges      = [variables_range   for _ in range(dimensionality)]
         is_bounded  = [variables_bounded for _ in range(dimensionality)]
         # Update the metaheuristic with objective function information

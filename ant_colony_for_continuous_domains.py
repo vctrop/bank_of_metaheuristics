@@ -335,8 +335,8 @@ class AELACOr(SRAACOr):
             print("Error, compute success rate before updating q")
             exit(-1)
         
-        # Compute new q, inversely proportional (linearity or not) to the success rate
-        self.q = self.evaluate_map('q', (1 - self.success_rate))
+        # Compute new q, directly proportional (linearity or not) to the success rate
+        self.q = self.evaluate_map('q', self.success_rate)
         
     
 # Adaptive generation dispersion ACOr
@@ -381,7 +381,7 @@ class AGDACOr(SRAACOr):
             print("Error, compute success rate before updating xi")
             exit(-1)
         
-        # Compute new xi, directly proportional (linearity or not) to the success rate
+        # Compute new xi, inversely proportional (linearity or not) to the success rate
         self.xi = self.evaluate_map('xi', (1 - self.success_rate))
 
     
@@ -434,7 +434,7 @@ class BAACOr(SRAACOr):
             exit(-1)
         
         # Compute new xi
-        self.xi = self.evaluate_map('xi', self.success_rate)
+        self.xi = self.evaluate_map('xi', (1 - self.success_rate))
         
       
     def control_q(self):

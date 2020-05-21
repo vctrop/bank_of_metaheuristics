@@ -15,12 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
     
+# Python standard library
+import sys
+import time
+# 3rd party 
+from deap.benchmarks import ackley
 # Own
 import ant_colony_for_continuous_domains
 import particle_swarm_optimization
 import simulated_annealing
-from deap.benchmarks import ackley
-import sys
 
 if len(sys.argv) != 2:
     print("Please enter \"%s {number of function evaluations}\"" % sys.argv[0])
@@ -44,7 +47,7 @@ def flatten_cost(cost_function):
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACOr")
 # Parameters
-k = 50;  pop_size = 2;  q = 1e-2; xi = 0.85
+k = 50;  pop_size = 10;  q = 1e-2; xi = 0.85
 # Configure and run
 colony = ant_colony_for_continuous_domains.ACOr()  
 colony.set_verbosity(False)
