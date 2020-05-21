@@ -94,7 +94,7 @@ def run_lin_sig_exp_mappings():
     metaheuristic_runs = 100
     for map_type in (['lin', 'sig', 'exp']):
         for mechanism in ['AEL', 'AGD'] :
-            metaheuristic_function_evals = 10000
+            metaheuristic_function_evals = 5000
             
             # For each train function, run a metaheuristic N times and save results
             for function, function_str in zip(train_functions, train_functions_names):        
@@ -106,7 +106,7 @@ def run_lin_sig_exp_mappings():
                 for i in range(metaheuristic_runs):
                     cost = function_cost(function, variables_range, variables_bounded, mechanism, map_type, metaheuristic_function_evals)
                     function_costs.append(cost)
-                    print(str(i) + '. ' + str(cost))
+                    #print(str(i) + '. ' + str(cost))
                 np.save('./results/lin_sig_exp/' + map_type + '_'+ mechanism + '_' + function_str + '_eval.npy', function_costs)
                 
 
