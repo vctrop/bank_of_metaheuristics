@@ -155,13 +155,12 @@ class ACOr(Base):
             Mi = self.SA[:, 0:self.num_variables]                               # Matrix of means
             for ant in range(self.pop_size):                                    # For each ant in the population
                 l = self._biased_selection(p)                                   # Select solution of the SA to sample from based on probabilities p
+                # Compute average distances from the chosen solution to other solutions
+                # Used as standard deviation of solution generation
+                sigmas_array = self.xi * np.sum(np.abs(self.SA[:,:-1] - self.SA[l, :-1]), axis = 0) / (self.k - 1)
                 
-                for var in range(self.num_variables):                           # Calculate the standard deviation of all variables from solution l
-                    sigma_sum = 0
-                    for i in range(self.k):
-                        sigma_sum += abs(self.SA[i, var] - self.SA[l, var])
-                    sigma = self.xi * (sigma_sum/(self.k - 1))
-                     
+                for var in range(self.num_variables):
+                    sigma = sigmas_array[var]
                     pop[ant, var] = np.random.normal(Mi[l, var], sigma)         # Sample from normal distribution with mean Mi and st. dev. sigma
                     
                     # Search space boundaries violation is only dealt with when the variable is considered bounded (self.is_bounded)
