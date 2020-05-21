@@ -162,8 +162,6 @@ class SA(Base):
                 else:
                     acceptance_probability = math.exp(-delta_J/self.temperature)
                 
-                
-                
                 # Candidate accepted
                 if np.random.rand() <= acceptance_probability:
                     self.current_solution[self.chosen_variable] = candidate_solution[self.chosen_variable]
@@ -193,7 +191,7 @@ class ACFSA(SA):
         # Define verbosity and NULL problem definition
         super().__init__
         self.crystallization_factor = None       # crystallization factors define the starndard deviation of the step size distribution for each variable at each itertion
-        
+
         
     def set_parameters(self, initial_temperature, cooling_constant, num_local_iter, function_evaluations_array):
         """ Define values for the parameters used by the algorithm """
@@ -230,5 +228,5 @@ class ACFSA(SA):
         
     def negative_feedback(self):
         """ Decreases standard deviation of Bates distribution in perturbation """
-        if self.crystallization_factor[self.chosen_variable] < int(1e6):
+        if self.crystallization_factor[self.chosen_variable] < int(1e5):
             self.crystallization_factor[self.chosen_variable] += 1
