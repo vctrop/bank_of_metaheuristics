@@ -3,7 +3,6 @@ Accurate and comprehensible implementaton of multiple metaheuristics.
 - Requirements:
   - Python 3.x
   - Numpy
-  - Scipy
   - Deap (only to import benchmark functions)
 
 ## Metaheuristics implemented until now:

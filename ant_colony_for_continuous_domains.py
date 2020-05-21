@@ -19,7 +19,6 @@
 import math
 # 3rth party
 import numpy as np
-from scipy.stats import norm
 # Own
 from base_metaheuristic import Base
 
@@ -110,6 +109,13 @@ class ACOr(Base):
         """ q is not updated in vanilla ACOr """
         pass
     
+    def gaussian_pdf_weights(self, x):
+        gaus_std = self.q * self.k
+        gaus_avg = 1
+        w = (1 / (gaus_std * math.sqrt(2 * math.pi))) * np.exp( (-1/2) * ( ( (x - gaus_avg) / gaus_std ) ** 2) )
+        
+        return w
+    
     def handle_adaptions(self, success_count):
         self.update_success_rate(success_count)
         self.control_q()
@@ -141,7 +147,7 @@ class ACOr(Base):
         
         # Array containing indices of solution archive position
         x = np.linspace(1,self.k,self.k) 
-        w = norm.pdf(x,1,self.q*self.k)                                         # Weights as a gaussian function of rank with mean 1, std qk
+        w = self.gaussian_pdf_weights(x)                                         # Weights as a gaussian function of rank with mean 1, std qk
         p = w/sum(w) 
         
         if self.verbosity:   print("ALGORITHM MAIN LOOP")
@@ -188,7 +194,7 @@ class ACOr(Base):
             # Append new solutions to the Archive
             self.SA = np.append(self.SA, pop, axis = 0)                                                         
             # Update PDF from which ants sample their centers, according to updates in q parameter
-            w = norm.pdf(x,1,self.q*self.k)                                         # Weights as a gaussian function of rank with mean 1, std qk
+            w = self.gaussian_pdf_weights(x)                                         # Weights as a gaussian function of rank with mean 1, std qk
             p = w/sum(w)                                                            # Probabilities of selecting solutions as search guides
         
             # Sort solution archive according to the fitness of each solution
