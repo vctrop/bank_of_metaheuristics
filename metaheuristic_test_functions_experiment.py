@@ -41,7 +41,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # ACOr
     if metaheuristic_name.lower() == 'acor':
         # Parameters
-        k = 50; m = 2; q = 1e-2; xi = 0.85
+        k = 50; m = 10; q = 1e-2; xi = 0.85
         # Configure
         metaheuristic = ACOr()
         metaheuristic.set_verbosity(False)
@@ -50,7 +50,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # AELACOr
     elif metaheuristic_name.lower() == 'aelacor':
         # Parameters
-        k = 50; m = 5; xi = 0.85
+        k = 50; m = 10; xi = 0.85
         q_min = 1e-2
         q_max = 1.0
         # Configure
@@ -160,7 +160,7 @@ def run_metaheuristic_test_functions(metaheuristic_name):
     # Establish function evaluations of interest:
     # - 500 to 10k, 500 at a time  (19 points)
     # - 10k to 200k, 10k at a time (20 points)
-    function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,21)]     
+    function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,11)]     
     #function_evaluations = [1000 * i for i in range(1,5)]     
     
     # Number of times each metaheuristic will run in each function
