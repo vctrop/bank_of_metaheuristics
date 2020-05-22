@@ -85,7 +85,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # SA
     elif metaheuristic_name.lower() == 'sa':
         # Parameters
-        local_iterations = 250
+        local_iterations = 100
         initial_temperature = 50
         cooling_constant = 0.99
         step_size = 1e-2
@@ -97,7 +97,7 @@ def parameterize_metaheuristic(metaheuristic_name, function_evals_array):
     # ACFSA
     elif metaheuristic_name.lower() == 'acfsa':
         # Parameters
-        local_iterations = 250
+        local_iterations = 100
         initial_temperature = 50
         cooling_constant = 0.99 
         # Configure
@@ -158,14 +158,12 @@ def run_metaheuristic_test_functions(metaheuristic_name):
     
     
     # Establish function evaluations of interest:
-    # - 500 to 10k, 500 at a time  (19 points)
-    # - 10k to 200k, 10k at a time (20 points)
-    function_evaluations = [500 * i for i in range(1, 20)] + [10000 * i for i in range(1,11)]     
-    #function_evaluations = [1000]     
+    # - 100 to 10k, 100 at a time  (99 points)
+    # - 10k to 50k, 10k at a time (5 points)
+    function_evaluations = [100 * i for i in range(1, 100)] + [10000 * i for i in range(1,6)] 
     
     # Number of times each metaheuristic will run in each function
     num_runs = 100
-    #num_runs = 10
 
     # For all test objective functions, run the given metaheuristic for a number of times
     for function, function_str in zip(test_functions, functions_names):

@@ -19,7 +19,7 @@
 import sys
 import time
 # 3rd party 
-from deap.benchmarks import ackley, bohachevsky
+from deap.benchmarks import ackley
 # Own
 import ant_colony_for_continuous_domains
 import particle_swarm_optimization
@@ -42,7 +42,7 @@ def flatten_cost(cost_function):
     def flattened_cost(x):
         return cost_function(x)[0]
     return flattened_cost
-''' 
+
 # ACOr
 # Total # of function evaluations: archive_size + population_size * num_iterations
 print("ACOr")
@@ -123,7 +123,8 @@ sa.set_parameters(initial_temperature, cooling_constant, step_size, local_iterat
 sa.define_variables(ranges, is_bounded)
 solution = sa.optimize()
 print(solution)
-'''
+
+
 # ACFSA
 print("ACFSA")
 # Parameters
@@ -132,12 +133,12 @@ local_iterations = 100
 # Configure and run
 acfsa = simulated_annealing.ACFSA()
 acfsa.set_verbosity(False)
-acfsa.set_cost(flatten_cost(bohachevsky))
+acfsa.set_cost(flatten_cost(ackley))
 acfsa.set_parameters(initial_temperature, cooling_constant, local_iterations, [num_func_evals])
 acfsa.define_variables(ranges, is_bounded)
 solution = acfsa.optimize()
 print(solution)
-"""
+
 # PSO
 print("PSO")
 # Parameters
@@ -150,7 +151,6 @@ swarm.set_parameters(swarm_size, personal_acceleration, global_acceleration, [nu
 swarm.define_variables(ranges, is_bounded)
 solution = swarm.optimize()
 print(solution)
-
 
 # AIWPSO
 print("AIWPSO")
@@ -165,4 +165,3 @@ swarm.set_parameters(swarm_size, personal_acceleration, global_acceleration, min
 swarm.define_variables(ranges, is_bounded)
 solution = swarm.optimize()
 print(solution)
-"""

@@ -202,7 +202,7 @@ class ACOr(Base):
             # Remove worst solutions
             self.SA = self.SA[0:self.k, :]   
             # Extract current best solution
-            self.best_solution = self.SA[0, :]
+            self.best_solution = np.array(self.SA[0, :])
             if (self.relative_iterations - 1 == iteration).any():
                 recorded_solutions.append(self.best_solution)
             

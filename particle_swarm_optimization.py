@@ -135,14 +135,13 @@ class PSO(Base):
                 
                 # Update personal best solution
                 if self.swarm_positions[particle, -1] < self.personal_bests[particle, -1]:
-                    self.personal_bests[particle, :] = self.swarm_positions[particle, :]
-                    
+                    self.personal_bests[particle, :] = np.array(self.swarm_positions[particle, :])
                     acceptance_count += 1
                     
                     # Update global best solution
                     if self.personal_bests[particle, -1] < self.global_best[-1]:
-                        self.global_best = self.personal_bests[particle, :]
-                
+                        self.global_best = np.array(self.personal_bests[particle, :])
+                        
                 # Update inertia weight based on success rate of the swarm
                 # Has no effect in vanilla PSO
                 self.update_inertia_weight(acceptance_count)
@@ -165,7 +164,7 @@ class PSO(Base):
             
             if (self.relative_iterations - 1 == iteration).any():
                 recorded_solutions.append(self.global_best)
-        
+            
         return np.array(recorded_solutions)
         
         

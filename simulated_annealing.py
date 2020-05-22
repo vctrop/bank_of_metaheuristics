@@ -140,16 +140,13 @@ class SA(Base):
                 # Perturbate the chosen variable
                 perturbation = self.compute_perturbation()
                 pertubated_variable = self.current_solution[self.chosen_variable] + perturbation
-                print(pertubated_variable)
                 # For bounded variables, deal with search space violation using the hard border strategy
                 if self.is_bounded[self.chosen_variable]:
                     
                     if pertubated_variable < self.initial_ranges[self.chosen_variable][0]:
-                        print('\n\nHERE\n\n')
                         pertubated_variable = self.initial_ranges[self.chosen_variable][0]
                         
                     elif pertubated_variable > self.initial_ranges[self.chosen_variable][1]:
-                        print('\n\nHERE\n\n')
                         pertubated_variable = self.initial_ranges[self.chosen_variable][1]
                 
                 candidate_solution = np.array(self.current_solution)
@@ -219,9 +216,6 @@ class ACFSA(SA):
             
         random_array = np.random.uniform(low = -0.5, high = 0.5, size = int(self.crystallization_factor[self.chosen_variable]))
         perturbation = np.sum(random_array) / self.crystallization_factor[self.chosen_variable]
-        
-        print(self.crystallization_factor, perturbation)
-        
         
         return perturbation
         
