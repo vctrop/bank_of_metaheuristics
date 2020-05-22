@@ -163,7 +163,7 @@ class PSO(Base):
                             self.swarm_positions[particle, var] = self.initial_ranges[var][1]        
             
             if (self.relative_iterations - 1 == iteration).any():
-                recorded_solutions.append(self.global_best)
+                recorded_solutions.append(np.array(self.global_best))
             
         return np.array(recorded_solutions)
         

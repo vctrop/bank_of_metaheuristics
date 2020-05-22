@@ -179,7 +179,7 @@ class SA(Base):
                     self.negative_feedback()
                     
             if (self.relative_iterations - 1 == global_i).any():
-                recorded_solutions.append(self.best_solution)
+                recorded_solutions.append(np.array(self.best_solution))
             
         return np.array(recorded_solutions)
 

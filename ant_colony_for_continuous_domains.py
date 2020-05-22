@@ -204,7 +204,7 @@ class ACOr(Base):
             # Extract current best solution
             self.best_solution = np.array(self.SA[0, :])
             if (self.relative_iterations - 1 == iteration).any():
-                recorded_solutions.append(self.best_solution)
+                recorded_solutions.append(np.array(self.best_solution))
             
         return np.array(recorded_solutions)
         
