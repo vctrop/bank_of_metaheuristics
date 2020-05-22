@@ -38,37 +38,15 @@ def print_avg_std():
                 print(str(format(mean, '.3E')) + ' (' + str(format(std, '.3E')) +')')
                 pval_aux_matrix.append([mean, list(function_costs), map_type])
             
-            if not (function_str == 'ackley' and mechanism == 'AEL'):
-                # Sort p-val auxiliary matrix according to the averages
-                pval_aux_matrix = np.array(pval_aux_matrix)
-                pval_aux_matrix = pval_aux_matrix[pval_aux_matrix[:, 0].argsort()]             
-                # Compute p-val between the arrays of the best and second best approaches   
-                _, pval = wilcoxon(pval_aux_matrix[0,1], pval_aux_matrix[1,1])
-                print('(p-value) ' + str(pval_aux_matrix[0,2]) + ' v ' + str(pval_aux_matrix[1,2]) + ' = ' + str(format(pval,'.3')))
+            #if not (function_str == 'ackley' and mechanism == 'AEL'):
+            # Sort p-val auxiliary matrix according to the averages
+            pval_aux_matrix = np.array(pval_aux_matrix)
+            pval_aux_matrix = pval_aux_matrix[pval_aux_matrix[:, 0].argsort()]             
+            # Compute p-val between the arrays of the best and second best approaches   
+            _, pval = wilcoxon(pval_aux_matrix[0,1], pval_aux_matrix[1,1])
+            print('(p-value) ' + str(pval_aux_matrix[0,2]) + ' v ' + str(pval_aux_matrix[1,2]) + ' = ' + str(format(pval,'.3')))
             print('\n')
-            
-# Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
-# def print_p_values():
-    # mechanisms = ['AEL', 'AGD']
-    # function_names = ['rosenbrock', 'schwefel','ackley','griewank']
-    
-    # for mechanism in mechanisms:
-        # print('[' + mechanism + 'ACOr]')
-        
-        # for function_str in function_names:  
-            # print(function_str.upper())
-            
-            # lin_costs = np.load('./results/lin_sig_exp/lin' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            # sig_costs = np.load('./results/lin_sig_exp/sig' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            # exp_costs = np.load('./results/lin_sig_exp/exp' + '_'+ mechanism + '_' + function_str + '_eval.npy')
-            
-            # if ?:
-                # _, pval = wilcoxon(linear_costs, nonlinear_costs)
-            # else:
-                
-            # print('p-value = ' + str(format(pval, '.5f')) + '\n')
-            
 
-print_avg_std()
-#print_p_values()
+if __name__ == '__main__':
+    print_avg_std()
 
