@@ -172,7 +172,10 @@ def run_metaheuristic_test_functions(metaheuristic_name):
         # Configure search space of the objective function
         variables_bounded = functions_bounding[function_str]
         variables_range = functions_ranges[function_str]
-        dimensionality = 3                     # Number of variables for all functions
+        if function_str == 'bohachevsky':
+            dimensionality = 2                     # Number of variables for all functions
+        else:
+            dimensionality = 3
         ranges      = [variables_range   for _ in range(dimensionality)]
         is_bounded  = [variables_bounded for _ in range(dimensionality)]
         # Update the metaheuristic with objective function information

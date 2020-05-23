@@ -17,7 +17,6 @@
 
 # 3rd party
 import numpy as np
-from scipy.stats import wilcoxon
 
 # Print average and standard deviation of all metaheuristic applications for a given SMAC solution 
 def print_avg_std():
@@ -37,15 +36,6 @@ def print_avg_std():
                 std  = np.std(function_costs)
                 print(str(format(mean, '.3E')) + ' (' + str(format(std, '.3E')) +')')
                 pval_aux_matrix.append([mean, list(function_costs), map_type])
-            
-            #if not (function_str == 'ackley' and mechanism == 'AEL'):
-            # Sort p-val auxiliary matrix according to the averages
-            pval_aux_matrix = np.array(pval_aux_matrix)
-            pval_aux_matrix = pval_aux_matrix[pval_aux_matrix[:, 0].argsort()]             
-            # Compute p-val between the arrays of the best and second best approaches   
-            _, pval = wilcoxon(pval_aux_matrix[0,1], pval_aux_matrix[1,1])
-            print('(p-value) ' + str(pval_aux_matrix[0,2]) + ' v ' + str(pval_aux_matrix[1,2]) + ' = ' + str(format(pval,'.3')))
-            print('\n')
 
 if __name__ == '__main__':
     print_avg_std()
