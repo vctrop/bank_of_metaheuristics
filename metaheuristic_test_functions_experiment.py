@@ -160,7 +160,7 @@ def run_metaheuristic_test_functions(metaheuristic_name):
     # Establish function evaluations of interest:
     # - 100 to 10k, 100 at a time  (99 points)
     # - 10k to 50k, 10k at a time (5 points)
-    function_evaluations = [100 * i for i in range(1, 100)] + [10000 * i for i in range(1,6)] 
+    function_evaluations = [100 * i for i in range(1, 100)] + [10000 * i for i in range(1,11)] 
     
     # Number of times each metaheuristic will run in each function
     num_runs = 100
