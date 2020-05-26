@@ -25,25 +25,23 @@ if len(sys.argv) != 2:
     print('Error, please use: python3 %s {objective_function}' % (sys.argv[0]))
     exit(-1)
     
-function_name = sys.argv[1]
+function_name = (sys.argv[1]).lower()
 test_functions_names = ['bohachevsky', 'cigar', 'rastrigin', 'schaffer', 'sphere', 'himmelblau']
 if not (function_name in test_functions_names):
     print('Error, results are available for test functions only (bohachevsky, cigar, rastrigin, schaffer, sphere and himmelblau)')
     exit(-1)
     
-function_evaluations = [100 * i for i in range(1, 100)] + [10000 * i for i in range(1,6)] 
+function_evaluations = [100 * i for i in range(1, 100)] + [10000 * i for i in range(1,11)] 
 metaheuristics_names = ['acor', 'aelacor', 'agdacor', 'baacor', 'aiwpso', 'acfsa']
 colors               = []
 plt.figure()    
 for index, metaheuristic_str in enumerate(metaheuristics_names):
     costs_matrix = np.load('./results/metaheuristics_comparison/' + function_name + '_' + metaheuristic_str + '_costs.npy')
-    print(np.shape(costs_matrix))
     average_cost_trajectory = np.sum(costs_matrix, axis = 0)
-    print(np.shape(average_cost_trajectory))
-    if metaheuristic_str == 'baacor':
-        print(average_cost_trajectory)
-    
-    plt.plot(function_evaluations, average_cost_trajectory, label=metaheuristic_str)
+    plt.plot(function_evaluations, average_cost_trajectory, label=metaheuristic_str, linewidth=3)
 
-plt.legend()
+plt.xlabel('Function evaluations', fontsize=18)
+plt.ylabel('Cost', fontsize=18)
+plt.legend(fontsize=16)
+
 plt.show()
