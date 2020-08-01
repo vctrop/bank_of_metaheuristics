@@ -147,7 +147,7 @@ class ACOr(Base):
         
         # Array containing indices of solution archive position
         x = np.linspace(1,self.k,self.k) 
-        w = self.gaussian_pdf_weights(x)                                         # Weights as a gaussian function of rank with mean 1, std qk
+        w = self.gaussian_pdf_weights(x)                                         # Weights as a Gaussian function of rank with mean 1, std qk
         p = w/sum(w) 
         
         if self.verbosity:   print("ALGORITHM MAIN LOOP")
@@ -208,7 +208,6 @@ class ACOr(Base):
             
         return np.array(recorded_solutions)
         
-## The following classes show that the idea of exploration/exploitation adaption based in the success rate of the swarm in AIWPS (Nickabadi et al., 2011) can be applied to ACOr, and possibly many other swarm-based metaheuristics.
 
 # Success rate adaptive ACOr 
 class SRAACOr(ACOr):
