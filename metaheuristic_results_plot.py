@@ -38,6 +38,7 @@ plt.figure()
 for index, metaheuristic_str in enumerate(metaheuristics_names):
     costs_matrix = np.load('./results/metaheuristics_comparison/' + function_name + '_' + metaheuristic_str + '_costs.npy')
     average_cost_trajectory = np.sum(costs_matrix, axis = 0)
+    average_cost_trajectory /= 30
     plt.plot(function_evaluations, average_cost_trajectory, label=metaheuristic_str, linewidth=3)
 
 plt.xlabel('Function evaluations', fontsize=18)
