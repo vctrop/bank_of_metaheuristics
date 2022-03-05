@@ -73,7 +73,7 @@ class ACOr(Base):
         """ Defines the number of variables, their initial values ranges and wether or not these ranges constrain the variable during the search """
         # Input error checking
         if self.num_iter == 0:
-            print("Error, please set algorithm parameters before variables definition")
+            print("Error, trying to define variables before setting algorithm parameters or using k = num_iter")
             exit(-1)
         if len(initial_ranges) == 0 or len(is_bounded) == 0:
             print("Error, initial_ranges and is_bounded lists must not be empty")
